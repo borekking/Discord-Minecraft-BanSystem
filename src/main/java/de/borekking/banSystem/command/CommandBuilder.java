@@ -1,0 +1,47 @@
+package de.borekking.banSystem.command;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class CommandBuilder {
+
+    // Class to Build BSBaseCommands (meaning Commands with subCommands, subCommandGroups)
+    // StandAloneCommands obviously don't need a builder.
+
+    private final BSBaseCommand command;
+
+    private final Map<String, BSSubCommandGroup> subCommandGroups;
+
+    public CommandBuilder(String name, String description) {
+        this.command = new BSBaseCommand(name, description);
+
+        this.subCommandGroups = new HashMap<>();
+    }
+
+    // Add a single SubCommand
+    public void addSubCommand(BSStandAloneCommand... subCommand) {
+        this.command.addSubCommands(subCommand);
+    }
+
+    public void addSubCommandGroup(String name, String description) {
+        this.subCommandGroups.put(name, new BSSubCommandGroup(name, description));
+    }
+
+    // Add a subCommand in a subCommandGroup
+    public void addSubCommand(String subCommandGroup, BSStandAloneCommand subCommand) {
+        // Check if subCommandGroup already exists
+        BSSubCommandGroup group = this.subCommandGroups.get(subCommandGroup);
+        if (group == null) return; // Group does not exist!
+
+        group.addSubCommands(subCommand);
+    }
+
+    public BSCommand create() {
+        // Add subCommandGroups
+        for (BSSubCommandGroup group : this.subCommandGroups.values()) {
+            this.command.addSubCommandGroups(group);
+        }
+
+        return this.command;
+    }
+}

@@ -1,0 +1,151 @@
+package de.borekking.banSystem.command;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
+
+import net.md_5.bungee.api.CommandSender;
+
+public class BSBaseCommand extends BSCommand {
+
+    // Command with subcommands
+
+    /*
+     * Command
+     *    -> options
+     *    -> SubCommand
+     *           -> options
+     *    -> subCommandGroup
+     *        -> subCommand
+     *               -> options
+     *
+     * (Discord) Note: Command itself is not usable if there are subCommandGroups or subCommands
+     *
+     */
+
+    private final Map<String, BSSubCommandGroup> subCommandGroups;
+    private final Map<String, BSStandAloneCommand> subCommands;
+
+    // Package Private because instances should only be created in builder (contained in this package)
+    BSBaseCommand(String name, String description) {
+        super(name, description);
+
+        this.subCommandGroups = new HashMap<>();
+        this.subCommands = new HashMap<>();
+    }
+
+    // Package Private because new subCommands should only be added in builder (contained in this package)
+    void addSubCommands(BSStandAloneCommand... subCommands) {
+        for (BSStandAloneCommand command : subCommands) {
+            if (command == null) continue; // Skip if null
+
+            // Make sure no subCommand and subCommandGroup have the same name.
+            // Check for doubled subCommands too.
+            if (this.subCommandGroups.containsKey(command.getName()) || this.subCommands.containsKey(command.getName())) {
+                throw new IllegalArgumentException("Tried to add SubCommand (" +  command.getName() +  ") but SubCommand or SubCommandGroup already existed!");
+            }
+
+            this.subCommands.put(command.getName(), command);
+        }
+    }
+
+    // Package Private because new SubCommandGroups should only be added in builder (contained in this package)
+    void addSubCommandGroups(BSSubCommandGroup... subCommandGroups) {
+        for (BSSubCommandGroup subCommandGroup : subCommandGroups) {
+            if (subCommandGroup == null) continue; // Skip if null
+
+            // Make sure no subCommand and subCommandGroup have the same name.
+            // Check for doubled subCommands too.
+            if (this.subCommandGroups.containsKey(subCommandGroup.getName()) || this.subCommands.containsKey(subCommandGroup.getName())) {
+                throw new IllegalArgumentException("Tried to add SubCommandGroup (" +  subCommandGroup.getName() +  ") but SubCommand or SubCommandGroup already existed!");
+            }
+
+            this.subCommandGroups.put(subCommandGroup.getName(), subCommandGroup);
+        }
+    }
+
+    @Override
+    public void execute(CommandSender sender, String[] args) {
+        int argsRemove = 1;
+        BSStandAloneCommand command = this.getSubCommand(args);
+
+        if (command == null) {
+            command = this.getSubCommandFromGroup(args);
+            argsRemove = 2;
+        }
+
+        if (command == null) return;
+
+        String[] newArgs = Arrays.copyOfRange(args, argsRemove, args.length);
+        command.execute(sender, newArgs);
+    }
+
+    @Override
+    public void perform(SlashCommandInteractionEvent event) {
+        String group = event.getSubcommandGroup();
+        String subCommand = event.getSubcommandName();
+
+        BSStandAloneCommand command = this.getSubCommand(subCommand);
+        if (command == null) {
+            command = this.getSubCommandFromGroup(group, subCommand);
+        }
+
+        if (command == null) return;
+
+        command.perform(event);
+    }
+
+    public SlashCommandData getCommandData() {
+        SlashCommandData commandData = super.getCommandData();
+
+        // Add subCommands
+        commandData.addSubcommands(this.createSubCommandDataList(this.subCommands.values()));
+
+        // Add subCommandGroups
+        commandData.addSubcommandGroups(this.subCommandGroups.values().stream()
+                .map(group -> new SubcommandGroupData(group.getName(), group.getDescription())
+                        .addSubcommands(this.createSubCommandDataList(group.getSubCommands()))).collect(Collectors.toList()));
+
+        return commandData;
+    }
+
+    // Get direct SubCommand from args
+    private BSStandAloneCommand getSubCommand(String[] args) {
+        if (args.length < 1) return null; // There can not be a sub command if no args are provided
+
+        return this.getSubCommand(args[0]);
+    }
+
+    // Get SubCommand from SubCommandGroup from args
+    private BSStandAloneCommand getSubCommandFromGroup(String[] args) {
+        if (args.length < 2) return null; // There can not be a sub command group if only one arg is provided
+
+        return this.getSubCommandFromGroup(args[0], args[1]);
+    }
+
+    // Get direct SubCommand
+    private BSStandAloneCommand getSubCommand(String subCommand) {
+        return this.subCommands.get(subCommand);
+    }
+
+    // Get SubCommand from SubCommandGroup
+    private BSStandAloneCommand getSubCommandFromGroup(String group, String subCommand) {
+        BSSubCommandGroup subCommandGroup = this.subCommandGroups.get(group);
+        return subCommandGroup.getSubCommand(subCommand);
+    }
+
+    private Collection<SubcommandData> createSubCommandDataList(Collection<BSStandAloneCommand> subCommands) {
+        return subCommands.stream().map(this::getSubCommandData).collect(Collectors.toList());
+    }
+
+    private SubcommandData getSubCommandData(BSStandAloneCommand command) {
+        return new SubcommandData(command.getName(), command.getDescription()).addOptions(command.getOptions());
+    }
+}
