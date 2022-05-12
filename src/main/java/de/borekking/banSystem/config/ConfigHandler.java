@@ -2,7 +2,6 @@ package de.borekking.banSystem.config;
 
 import net.md_5.bungee.config.Configuration;
 
-
 public class ConfigHandler {
 
     private final ConfigFile configFile;
@@ -11,6 +10,7 @@ public class ConfigHandler {
         this.configFile = new ConfigFile("config.yml");
 
         this.loadDefaultValues();
+        this.loadConfigEnum();
     }
 
     // Set default setting (from ConfigSetting-Enum) into config
