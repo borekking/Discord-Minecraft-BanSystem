@@ -10,7 +10,7 @@ public enum ConfigSetting {
 
     // Enum storing config values
 
-    ;
+    MINECRAFT_PREFIX("minecraft.prefix", "&7[&cBanSystem&7]");
 
     private final String path; // Key
     private Object value; // Value
