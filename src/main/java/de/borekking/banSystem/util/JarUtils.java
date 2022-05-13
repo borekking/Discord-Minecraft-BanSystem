@@ -19,7 +19,10 @@ import java.util.jar.JarFile;
 
 import net.md_5.bungee.api.plugin.Plugin;
 
-public class JarUtils {
+public final class JarUtils {
+
+    private JarUtils() {
+    }
 
     private static boolean RUNNING_FROM_JAR = false;
 
