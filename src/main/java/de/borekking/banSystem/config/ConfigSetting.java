@@ -10,7 +10,12 @@ public enum ConfigSetting {
 
     // Enum storing config values
 
-    MINECRAFT_PREFIX("minecraft.prefix", "&7[&cBanSystem&7]");
+    // Minecraft
+    MINECRAFT_PREFIX("minecraft.prefix", "&7[&cBanSystem&7]"),
+
+    // Discord Bot
+    DISCORD_TOKEN("discord.token", ""),
+    DISCORD_GUILD_ID("discord.guildID", "");
 
     private final String path; // Key
     private Object value; // Value
