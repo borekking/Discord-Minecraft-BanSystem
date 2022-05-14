@@ -67,15 +67,29 @@ public class ConfigFile {
         // Get parent from plugin folder and given path (if not null)
         String parent = dataFolder.getPath();
         if (path != null) {
-            parent +=  "/" + path;
+            parent = parent + "\\" + path;
         }
 
         this.file = new File(parent, fileName);
 
-        if (!this.file.exists()) this.file.createNewFile();
+        // Eventually create file's parents
+        this.createParents(this.file);
+
+        // Create the actual file
+        if (!this.file.exists()) {
+            this.file.createNewFile();
+        }
 
         this.loadFile();
         this.save();
+    }
+
+    private void createParents(File file) {
+        File parent = file.getParentFile();
+        if (parent == null) return; // Base Case
+
+        parent.mkdir();
+        createParents(parent);
     }
 
     public Configuration getConfig() {
