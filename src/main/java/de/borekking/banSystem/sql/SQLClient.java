@@ -51,6 +51,10 @@ public class SQLClient {
         }
     }
 
+    public PreparedStatement getPreparedStatement(String sql) throws SQLException {
+        return this.connection.prepareStatement(sql);
+    }
+
     public ResultSet getQuery(String qry) {
         ResultSet rs = null;
 
@@ -58,12 +62,29 @@ public class SQLClient {
             Statement st = this.connection.createStatement();
             rs = st.executeQuery(qry);
         } catch (SQLException e) {
-            e.printStackTrace();
-            BungeeMain.sendErrorMessage("Connection to MySQL-Database lost!");
-            this.connect(); // Try to connect again
+            this.catchSQLException(e);
         }
 
         return rs;
+    }
+
+    // Returns true if given Statement has at least one result
+    public boolean preparedStatementHasResult(PreparedStatement statement) {
+        ResultSet rs = null;
+
+        try {
+            rs = statement.executeQuery();
+        } catch (SQLException e) {
+            this.catchSQLException(e);
+        }
+
+        return this.hasResult(rs);
+    }
+
+    // Returns true if given qry has at least one result
+    public boolean queryHasResult(String qry) {
+        ResultSet resultSet = this.getQuery(qry);
+        return hasResult(resultSet);
     }
 
     public void update(String qry) {
@@ -72,14 +93,31 @@ public class SQLClient {
             st.executeUpdate(qry);
             st.close();
         } catch (SQLException e) {
-            e.printStackTrace();
-            BungeeMain.sendErrorMessage("Connection to MySQL-Database lost!");
-            this.connect(); // Try to connect again
+            this.catchSQLException(e);
         }
     }
 
-    public PreparedStatement getPreparedStatement(String sql) throws SQLException {
-        return this.connection.prepareStatement(sql);
+    // Returns if given ResultSet has at least one result
+    private boolean hasResult(ResultSet resultSet) {
+        if (resultSet == null) return false;
+
+        try {
+            return resultSet.next();
+        } catch (SQLException e) {
+            return false;
+        } finally {
+            try {
+                resultSet.close();
+            } catch (SQLException e) {
+                this.catchSQLException(e);
+            }
+        }
+    }
+
+    private void catchSQLException(SQLException e) {
+        e.printStackTrace();
+        BungeeMain.sendErrorMessage("Connection to MySQL-Database lost!");
+        this.connect(); // Try to connect again
     }
 
     public boolean isConnected() {
