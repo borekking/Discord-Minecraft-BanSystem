@@ -77,6 +77,7 @@ public class BungeeMain extends Plugin {
 
     public static void shutdown() {
         instance.getProxy().stop();
+        instance.discordBot.disableBot();
     }
 
     // Utility function used for errors
