@@ -51,8 +51,25 @@ public class SQLClient {
         }
     }
 
-    public PreparedStatement getPreparedStatement(String sql) throws SQLException {
-        return this.connection.prepareStatement(sql);
+    public PreparedStatement getPreparedStatement(String sql) {
+        try {
+            return this.connection.prepareStatement(sql);
+        } catch (SQLException e) {
+            this.catchSQLException(e);
+            return this.getPreparedStatement(sql);
+        }
+    }
+
+    public ResultSet getQuery(PreparedStatement statement) {
+        ResultSet rs = null;
+
+        try {
+            rs = statement.executeQuery();
+        } catch (SQLException e) {
+            this.catchSQLException(e);
+        }
+
+        return rs;
     }
 
     public ResultSet getQuery(String qry) {
@@ -92,6 +109,15 @@ public class SQLClient {
             Statement st = this.connection.createStatement();
             st.executeUpdate(qry);
             st.close();
+        } catch (SQLException e) {
+            this.catchSQLException(e);
+        }
+    }
+
+    public void update(PreparedStatement statement) {
+        try {
+            statement.executeUpdate();
+            statement.close();
         } catch (SQLException e) {
             this.catchSQLException(e);
         }
