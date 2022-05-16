@@ -46,7 +46,7 @@ public class SQLClient {
             this.connected = true;
         } catch (SQLException e) {
             e.printStackTrace();
-            BungeeMain.sendErrorMessage("MYSQL USERNAME, IP ODER PASSWORT FALSCH! -> Disabled");
+            BungeeMain.sendErrorMessage("MYSQL USERNAME, IP ODER PASSWORD WRONG! Stopping Server...");
             BungeeMain.shutdown();
         }
     }
