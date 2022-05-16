@@ -6,6 +6,7 @@ import de.borekking.banSystem.command.commands.other.HelpCommand;
 import de.borekking.banSystem.config.ConfigHandler;
 import de.borekking.banSystem.config.ConfigSetting;
 import de.borekking.banSystem.discord.DiscordBot;
+import de.borekking.banSystem.sql.SQLClient;
 import de.borekking.banSystem.util.JarUtils;
 
 import net.md_5.bungee.api.CommandSender;
@@ -23,6 +24,8 @@ public class BungeeMain extends Plugin {
     private CommandHandler commandHandler;
     private DiscordBot discordBot;
 
+    private SQLClient sqlClient;
+
     @Override
     public void onLoad() {
         instance = this;
@@ -37,6 +40,10 @@ public class BungeeMain extends Plugin {
         this.commandHandler = new CommandHandler(commands); // Load commands (discord and minecraft)
 
         this.registerCommands(commands);
+
+        // Create SQL Client
+        this.sqlClient = new SQLClient(ConfigSetting.SQL_HOST.getValueAsString(), ConfigSetting.SQL_DATABASE.getValueAsString(),
+                ConfigSetting.SQL_USER.getValueAsString(), ConfigSetting.SQL_PASSWORD.getValueAsString());
 
         // ------ <Discord Bot> ------
         String token = ConfigSetting.DISCORD_TOKEN.getValueAsString(),
@@ -96,6 +103,10 @@ public class BungeeMain extends Plugin {
 
     public DiscordBot getDiscordBot() {
         return discordBot;
+    }
+
+    public SQLClient getSqlClient() {
+        return sqlClient;
     }
 
     public static BungeeMain getInstance() {

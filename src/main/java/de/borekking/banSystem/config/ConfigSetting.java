@@ -15,7 +15,13 @@ public enum ConfigSetting {
 
     // Discord Bot
     DISCORD_TOKEN("discord.token", ""),
-    DISCORD_GUILD_ID("discord.guildID", "");
+    DISCORD_GUILD_ID("discord.guildID", ""),
+
+    // SQL
+    SQL_HOST("sql.host", ""),
+    SQL_DATABASE("sql.database", ""),
+    SQL_USER("sql.user", ""),
+    SQL_PASSWORD("sql.password", "");
 
     private final String path; // Key
     private Object value; // Value
