@@ -50,7 +50,9 @@ public class BungeeMain extends Plugin {
 
     @Override
     public void onDisable() {
-        this.discordBot.disableBot();
+        if (this.discordBot != null) {
+            this.discordBot.disableBot();
+        }
     }
 
     private void registerCommands(BSCommand[] commands) {
@@ -77,7 +79,10 @@ public class BungeeMain extends Plugin {
 
     public static void shutdown() {
         instance.getProxy().stop();
-        instance.discordBot.disableBot();
+
+        if (instance.discordBot != null) {
+            instance.discordBot.disableBot();
+        }
     }
 
     // Utility function used for errors
