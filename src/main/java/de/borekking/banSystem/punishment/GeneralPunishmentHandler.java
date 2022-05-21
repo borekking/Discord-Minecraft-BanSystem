@@ -40,7 +40,6 @@ public class GeneralPunishmentHandler implements IPunishHandler {
     }
 
     @Override
-    // If user is banned
     public boolean isPunished(long userID, Platform platform) {
         try {
             this.isPunishedStatement.setLong(1, userID);
@@ -83,8 +82,11 @@ public class GeneralPunishmentHandler implements IPunishHandler {
         ResultSet resultSet = this.database.getQuery(this.getPunishStatement);
 
         try {
-            // Set ResultSet to first result
-            resultSet.next();
+            // Set ResultSet to first result and check if there is one
+            // if not so, result null.
+            if (!resultSet.next()) {
+                return null;
+            }
 
             return new Punishment(
                     resultSet.getLong(this.userIDName),
