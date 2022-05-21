@@ -21,10 +21,10 @@ public class GeneralPunishmentHandler implements IPunishHandler {
 
     private final SQLClient database;
 
-    private final PreparedStatement isPunishedStatement, // PS if user is punished (1 -> userID)
+    private final PreparedStatement isPunishedStatement, // PS if user is punished (1 -> userID, 2 -> Platform)
                                     punishStatement, // PS for punishing a user (...)
-                                    getPunishStatement, // PS for getting a punishment from userID (1 -> userID)
-                                    deletePunishmentStatement; // PS for deleting a punishment (1 -> userID)
+                                    getPunishStatement, // PS for getting a punishment from userID (1 -> userID, 2 -> Platform)
+                                    deletePunishmentStatement; // PS for deleting a punishment (1 -> userID, 2 -> Platform)
 
     public GeneralPunishmentHandler(SQLClient database, String tableName) {
         this.database = database;
@@ -32,18 +32,19 @@ public class GeneralPunishmentHandler implements IPunishHandler {
 
         this.createDBTable();
 
-        this.isPunishedStatement = this.database.getPreparedStatement("SELECT " + this.userIDName + " FROM " + this.tableName + " WHERE " + this.userIDName + " = ?;");
+        this.isPunishedStatement = this.database.getPreparedStatement("SELECT " + this.userIDName + " FROM " + this.tableName + " WHERE " + this.userIDName + " = ? AND " + this.platformName + " = ?;");
         this.punishStatement = this.database.getPreparedStatement("INSERT INTO " + this.tableName + " (" + this.userIDName + ", " + this.operatorIDName + ", " + this.platformName +
                 ", " + this.timestampName + ", " + this.timestampEndName + ", " + this.reasonName + ") VALUES(?, ?, ?, ?, ?, ?);");
-        this.getPunishStatement = this.database.getPreparedStatement("SELECT * FROM " + this.tableName + " WHERE " + this.userIDName + " = ?;");
-        this.deletePunishmentStatement = this.database.getPreparedStatement("DELETE FROM " + this.tableName + " WHERE " + this.userIDName + " = ?;");
+        this.getPunishStatement = this.database.getPreparedStatement("SELECT * FROM " + this.tableName + " WHERE " + this.userIDName + " = ? AND " + this.platformName + " = ?;");
+        this.deletePunishmentStatement = this.database.getPreparedStatement("DELETE FROM " + this.tableName + " WHERE " + this.userIDName + " = ? AND " + this.platformName + " = ?;");
     }
 
     @Override
     // If user is banned
-    public boolean isPunished(long userID) {
+    public boolean isPunished(long userID, Platform platform) {
         try {
             this.isPunishedStatement.setLong(1, userID);
+            this.isPunishedStatement.setString(2, platform.getIdentifier());
         } catch (SQLException e) {
             this.handleSQLError(e);
             return false;
@@ -53,7 +54,7 @@ public class GeneralPunishmentHandler implements IPunishHandler {
     }
 
     @Override
-    public void punish(Punishment punishment) {
+    public void punish(Punishment punishment, Platform platform) {
         try {
             this.punishStatement.setLong(1, punishment.getUserID());
             this.punishStatement.setLong(2, punishment.getOperatorID());
@@ -70,9 +71,10 @@ public class GeneralPunishmentHandler implements IPunishHandler {
     }
 
     @Override
-    public Punishment getPunishment(long userID) {
+    public Punishment getPunishment(long userID, Platform platform) {
         try {
             this.isPunishedStatement.setLong(1, userID);
+            this.isPunishedStatement.setString(2, platform.getIdentifier());
         } catch (SQLException e) {
             this.handleSQLError(e);
             return null;
@@ -82,10 +84,13 @@ public class GeneralPunishmentHandler implements IPunishHandler {
 
         try {
             return new Punishment(
-                    resultSet.getLong(this.userIDName), resultSet.getLong(this.operatorIDName),
-                    resultSet.getLong(this.timestampName), resultSet.getLong(this.timestampEndName),
+                    resultSet.getLong(this.userIDName),
+                    resultSet.getLong(this.operatorIDName),
+                    resultSet.getLong(this.timestampName),
+                    resultSet.getLong(this.timestampEndName),
                     Platform.getByIdentifier(resultSet.getString(this.platformName)),
-                    resultSet.getString(this.reasonName));
+                    resultSet.getString(this.reasonName)
+            );
         } catch (SQLException e) {
             this.handleSQLError(e);
             return null;
@@ -93,9 +98,10 @@ public class GeneralPunishmentHandler implements IPunishHandler {
     }
 
     @Override
-    public void unPunish(long userID) {
+    public void unPunish(long userID, Platform platform) {
         try {
-            this.deletePunishmentStatement.setLong(1, userID);
+            this.isPunishedStatement.setLong(1, userID);
+            this.isPunishedStatement.setString(2, platform.getIdentifier());
         } catch (SQLException e) {
             this.handleSQLError(e);
             return;
@@ -105,8 +111,8 @@ public class GeneralPunishmentHandler implements IPunishHandler {
     }
 
     @Override
-    public boolean isOver(long userID) {
-        Punishment punishment = this.getPunishment(userID);
+    public boolean isOver(long userID, Platform platform) {
+        Punishment punishment = this.getPunishment(userID, platform);
         return System.currentTimeMillis() >= punishment.getTimestampEnd();
     }
 
