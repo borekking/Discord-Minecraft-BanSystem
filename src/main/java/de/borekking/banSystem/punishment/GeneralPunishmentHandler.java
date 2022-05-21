@@ -83,6 +83,9 @@ public class GeneralPunishmentHandler implements IPunishHandler {
         ResultSet resultSet = this.database.getQuery(this.getPunishStatement);
 
         try {
+            // Set ResultSet to first result
+            resultSet.next();
+
             return new Punishment(
                     resultSet.getLong(this.userIDName),
                     resultSet.getLong(this.operatorIDName),
