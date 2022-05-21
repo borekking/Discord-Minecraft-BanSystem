@@ -87,12 +87,13 @@ public class SQLClient {
 
     // Returns true if given Statement has at least one result
     public boolean preparedStatementHasResult(PreparedStatement statement) {
-        ResultSet rs = null;
+        ResultSet rs;
 
         try {
             rs = statement.executeQuery();
         } catch (SQLException e) {
             this.catchSQLException(e);
+            return false;
         }
 
         return this.hasResult(rs);
