@@ -124,6 +124,10 @@ public class GeneralPunishmentHandler implements IPunishHandler {
         return punishments;
     }
 
+    public boolean isOver(Punishment punishment) {
+        return System.currentTimeMillis() >= punishment.getTimestampEnd();
+    }
+
     private void createDBTable() {
         // DB should never be not connected here (Auto-Shutdown in SQLClient class for this case)
         // If it is, do shutdown here.
@@ -151,10 +155,6 @@ public class GeneralPunishmentHandler implements IPunishHandler {
             List<Punishment> punishments = this.getAllPunishments();
             punishments.stream().filter(this::isOver).forEach(this::unPunish);
         }).start();
-    }
-
-    private boolean isOver(Punishment punishment) {
-        return System.currentTimeMillis() >= punishment.getTimestampEnd();
     }
 
     // Return current entry of RS as Punishment
