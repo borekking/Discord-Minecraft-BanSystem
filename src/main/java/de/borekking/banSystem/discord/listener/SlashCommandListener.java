@@ -2,7 +2,7 @@ package de.borekking.banSystem.discord.listener;
 
 import de.borekking.banSystem.BungeeMain;
 import de.borekking.banSystem.command.BSCommand;
-import de.borekking.banSystem.util.MyEmbedBuilder;
+import de.borekking.banSystem.util.discord.MyEmbedBuilder;
 
 import java.awt.Color;
 
