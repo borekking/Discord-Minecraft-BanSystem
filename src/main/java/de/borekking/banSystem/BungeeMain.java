@@ -75,6 +75,13 @@ public class BungeeMain extends Plugin {
         };
     }
 
+    public static Role getMuteRole() {
+        long roleID = ConfigSetting.MUTE_ROLE.getValueAsLong();
+        if (roleID < 0) return null;
+
+        return DiscordUtils.getRole(roleID);
+    }
+
     public static String getPrefix() {
         return ConfigSetting.MINECRAFT_PREFIX.getValueAsColorString();
     }

@@ -14,14 +14,18 @@ public enum ConfigSetting {
     MINECRAFT_PREFIX("minecraft.prefix", "&7[&cBanSystem&7]"),
 
     // Discord Bot
-    DISCORD_TOKEN("discord.token", ""),
-    DISCORD_GUILD_ID("discord.guildID", ""),
+    MUTE_ROLE("discord.muteRole", -1),
+    DISCORD_TOKEN("discord.token",""),
+    DISCORD_GUILD_ID("discord.guildID",""),
 
     // SQL
-    SQL_HOST("sql.host", ""),
-    SQL_DATABASE("sql.database", ""),
-    SQL_USER("sql.user", ""),
-    SQL_PASSWORD("sql.password", "");
+    SQL_HOST("sql.host",""),
+    SQL_DATABASE("sql.database",""),
+    SQL_USER("sql.user",""),
+    SQL_PASSWORD("sql.password",""),
+
+    // Ban
+    BAN_DISCORD_MESSAGE("ban.discord.message", "Banned for reason: %reason%");
 
     private final String path; // Key
     private Object value; // Value

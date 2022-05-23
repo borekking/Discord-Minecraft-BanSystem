@@ -1,5 +1,7 @@
 package de.borekking.banSystem.punishment;
 
+import java.util.List;
+
 public interface IPunishHandler {
 
     // Check if user is punished
@@ -12,8 +14,7 @@ public interface IPunishHandler {
     Punishment getPunishment(long userID, Platform platform);
 
     // Remove punishment long userID
-    void unPunish(long userID, Platform platform);
+    void unPunish(Punishment punishment);
 
-    // If user is punished but timestampEnd is over
-    boolean isOver(long userID, Platform platform);
+    List<Punishment> getAllPunishments();
 }

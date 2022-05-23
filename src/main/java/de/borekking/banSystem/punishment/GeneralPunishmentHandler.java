@@ -6,6 +6,8 @@ import de.borekking.banSystem.sql.SQLClient;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GeneralPunishmentHandler implements IPunishHandler {
 
@@ -24,11 +26,16 @@ public class GeneralPunishmentHandler implements IPunishHandler {
     private final PreparedStatement isPunishedStatement, // PS if user is punished (1 -> userID, 2 -> Platform)
                                     punishStatement, // PS for punishing a user (...)
                                     getPunishStatement, // PS for getting a punishment from userID (1 -> userID, 2 -> Platform)
-                                    deletePunishmentStatement; // PS for deleting a punishment (1 -> userID, 2 -> Platform)
+                                    deletePunishmentStatement, // PS for deleting a punishment (1 -> userID, 2 -> Platform)
+                                    getAllPunishmentsStatement; // PS for getting RS with all userIDs in Punish-Table ()
 
-    public GeneralPunishmentHandler(SQLClient database, String tableName) {
+    // Type of Punishment to handle
+    private final PunishmentType punishmentType;
+
+    public GeneralPunishmentHandler(SQLClient database, String tableName, PunishmentType punishmentType) {
         this.database = database;
         this.tableName = tableName;
+        this.punishmentType = punishmentType;
 
         this.createDBTable();
 
@@ -37,6 +44,9 @@ public class GeneralPunishmentHandler implements IPunishHandler {
                 ", " + this.timestampName + ", " + this.timestampEndName + ", " + this.reasonName + ") VALUES(?, ?, ?, ?, ?, ?);");
         this.getPunishStatement = this.database.getPreparedStatement("SELECT * FROM " + this.tableName + " WHERE " + this.userIDName + " = ? AND " + this.platformName + " = ?;");
         this.deletePunishmentStatement = this.database.getPreparedStatement("DELETE FROM " + this.tableName + " WHERE " + this.userIDName + " = ? AND " + this.platformName + " = ?;");
+        this.getAllPunishmentsStatement = this.database.getPreparedStatement("SELECT * FROM " + this.platformName + ";");
+
+        this.startPunishmentOverCheck();
     }
 
     @Override
@@ -66,6 +76,8 @@ public class GeneralPunishmentHandler implements IPunishHandler {
             return;
         }
 
+        this.punishmentType.handlePunishment(punishment);
+
         this.database.update(this.punishStatement);
     }
 
@@ -80,7 +92,73 @@ public class GeneralPunishmentHandler implements IPunishHandler {
         }
 
         ResultSet resultSet = this.database.getQuery(this.getPunishStatement);
+        return this.getPunishment(resultSet);
+    }
 
+    @Override
+    public void unPunish(Punishment punishment) {
+        try {
+            this.isPunishedStatement.setLong(1, punishment.getUserID());
+            this.isPunishedStatement.setString(2, punishment.getPlatform().getIdentifier());
+        } catch (SQLException e) {
+            this.handleSQLError(e);
+            return;
+        }
+
+        this.punishmentType.handleUnPunish(punishment);
+
+        this.database.update(this.deletePunishmentStatement);
+    }
+
+    @Override
+    public List<Punishment> getAllPunishments() {
+        ResultSet userIDs = this.database.getQuery(this.getAllPunishmentsStatement);
+
+        List<Punishment> punishments = new ArrayList<>();
+
+        Punishment punishment;
+        while ((punishment = this.getPunishment(userIDs)) != null) {
+            punishments.add(punishment);
+        }
+
+        return punishments;
+    }
+
+    private void createDBTable() {
+        // DB should never be not connected here (Auto-Shutdown in SQLClient class for this case)
+        // If it is, do shutdown here.
+        if (!this.database.isConnected()) {
+            BungeeMain.sendErrorMessage("Connection to MySQL-Database lost!Stopping server...");
+            BungeeMain.shutdown();
+        }
+
+        // Create table with columns:
+        //    user-id (BIGINT), platform ("m" or "d" -> max. 2 chars String), timestamp (BIGINT),
+        //    timestamp-end (BIGINT), reason (max. 8000 chars String)
+        this.database.update("CREATE TABLE IF NOT EXISTS " + this.tableName + " (" + this.userIDName + " BIGINT, " + this.operatorIDName + " BIGINT, " + this.platformName +
+                " VARCHAR(2), " + this.timestampName + " BIGINT, " + this.timestampEndName + " BIGINT, " + this.reasonName + " VARCHAR(8000));");
+    }
+
+    private void startPunishmentOverCheck() {
+        new Thread(() -> {
+            try {
+                Thread.sleep(30_000); // 30 seconds
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+            // Get all punishments, filter for those which are over and call unPunish with them
+            List<Punishment> punishments = this.getAllPunishments();
+            punishments.stream().filter(this::isOver).forEach(this::unPunish);
+        }).start();
+    }
+
+    private boolean isOver(Punishment punishment) {
+        return System.currentTimeMillis() >= punishment.getTimestampEnd();
+    }
+
+    // Return current entry of RS as Punishment
+    private Punishment getPunishment(ResultSet resultSet) {
         try {
             // Set ResultSet to first result and check if there is one
             // if not so, result null.
@@ -100,40 +178,6 @@ public class GeneralPunishmentHandler implements IPunishHandler {
             this.handleSQLError(e);
             return null;
         }
-    }
-
-    @Override
-    public void unPunish(long userID, Platform platform) {
-        try {
-            this.isPunishedStatement.setLong(1, userID);
-            this.isPunishedStatement.setString(2, platform.getIdentifier());
-        } catch (SQLException e) {
-            this.handleSQLError(e);
-            return;
-        }
-
-        this.database.update(this.deletePunishmentStatement);
-    }
-
-    @Override
-    public boolean isOver(long userID, Platform platform) {
-        Punishment punishment = this.getPunishment(userID, platform);
-        return System.currentTimeMillis() >= punishment.getTimestampEnd();
-    }
-
-    private void createDBTable() {
-        // DB should never be not connected here (Auto-Shutdown in SQLClient class for this case)
-        // If it is, do shutdown here.
-        if (!this.database.isConnected()) {
-            BungeeMain.sendErrorMessage("Connection to MySQL-Database lost!Stopping server...");
-            BungeeMain.shutdown();
-        }
-
-        // Create table with columns:
-        //    user-id (BIGINT), platform ("m" or "d" -> max. 2 chars String), timestamp (BIGINT),
-        //    timestamp-end (BIGINT), reason (max. 8000 chars String)
-        this.database.update("CREATE TABLE IF NOT EXISTS " + this.tableName + " (" + this.userIDName + " BIGINT, " + this.operatorIDName + " BIGINT, " + this.platformName +
-                " VARCHAR(2), " + this.timestampName + " BIGINT, " + this.timestampEndName + " BIGINT, " + this.reasonName + " VARCHAR(8000));");
     }
 
     private void handleSQLError(SQLException e) {
