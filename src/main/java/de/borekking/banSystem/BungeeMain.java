@@ -5,13 +5,23 @@ import de.borekking.banSystem.command.CommandHandler;
 import de.borekking.banSystem.command.commands.other.HelpCommand;
 import de.borekking.banSystem.config.ConfigHandler;
 import de.borekking.banSystem.config.ConfigSetting;
+import de.borekking.banSystem.config.autoReason.AutoReasonHandler;
 import de.borekking.banSystem.discord.DiscordBot;
+import de.borekking.banSystem.minecraft.listener.ChatListener;
+import de.borekking.banSystem.minecraft.listener.PostLoginListener;
+import de.borekking.banSystem.punishment.GeneralPunishmentHandler;
+import de.borekking.banSystem.punishment.PunishmentType;
+import de.borekking.banSystem.punishment.user.UserManager;
 import de.borekking.banSystem.sql.SQLClient;
 import de.borekking.banSystem.util.JarUtils;
+import de.borekking.banSystem.util.discord.DiscordUtils;
+
+import net.dv8tion.jda.api.entities.Role;
 
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
 
 public class BungeeMain extends Plugin {
@@ -25,6 +35,12 @@ public class BungeeMain extends Plugin {
     private DiscordBot discordBot;
 
     private SQLClient sqlClient;
+
+    private GeneralPunishmentHandler banHandler, muteHandler;
+
+    private UserManager userManager;
+
+    private AutoReasonHandler autoBans, autoMutes;
 
     @Override
     public void onLoad() {
@@ -40,10 +56,22 @@ public class BungeeMain extends Plugin {
         this.commandHandler = new CommandHandler(commands); // Load commands (discord and minecraft)
 
         this.registerCommands(commands);
+        this.registerListeners();
 
         // Create SQL Client
         this.sqlClient = new SQLClient(ConfigSetting.SQL_HOST.getValueAsString(), ConfigSetting.SQL_DATABASE.getValueAsString(),
                 ConfigSetting.SQL_USER.getValueAsString(), ConfigSetting.SQL_PASSWORD.getValueAsString());
+
+        // Create PunishmentHandlers
+        this.banHandler = new GeneralPunishmentHandler(this.sqlClient, "ban", PunishmentType.BAN);
+        this.muteHandler = new GeneralPunishmentHandler(this.sqlClient, "mute", PunishmentType.MUTE);
+
+        // Create AutoBanHandler and AutoMuteHandler
+        this.autoBans = new AutoReasonHandler("autopunishments", "bans");
+        this.autoMutes = new AutoReasonHandler("autopunishments", "mutes");
+
+        // Create User Manager
+        this.userManager = new UserManager(this.sqlClient);
 
         // ------ <Discord Bot> ------
         String token = ConfigSetting.DISCORD_TOKEN.getValueAsString(),
@@ -67,6 +95,15 @@ public class BungeeMain extends Plugin {
         for (BSCommand command : commands) {
             proxyServer.getPluginManager().registerCommand(instance, command);
         }
+    }
+
+    private void registerListeners() {
+        this.registerListener(new ChatListener());
+        this.registerListener(new PostLoginListener());
+    }
+
+    private void registerListener(Listener listener) {
+        instance.getProxy().getPluginManager().registerListener(this, listener);
     }
 
     private BSCommand[] createCommands() {
@@ -114,6 +151,26 @@ public class BungeeMain extends Plugin {
 
     public SQLClient getSqlClient() {
         return sqlClient;
+    }
+
+    public GeneralPunishmentHandler getBanHandler() {
+        return banHandler;
+    }
+
+    public GeneralPunishmentHandler getMuteHandler() {
+        return muteHandler;
+    }
+
+    public AutoReasonHandler getAutoBans() {
+        return autoBans;
+    }
+
+    public AutoReasonHandler getAutoMutes() {
+        return autoMutes;
+    }
+
+    public UserManager getUserManager() {
+        return userManager;
     }
 
     public static BungeeMain getInstance() {
