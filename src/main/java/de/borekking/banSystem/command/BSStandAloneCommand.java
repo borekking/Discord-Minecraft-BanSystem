@@ -19,7 +19,7 @@ public abstract class BSStandAloneCommand extends BSCommand {
         super(name, description);
 
         this.options = new ArrayList<>();
-        this.options.addAll(Arrays.stream(optionData).filter(Objects::isNull).collect(Collectors.toList())); // Make sure only non-null objects are added
+        this.options.addAll(Arrays.stream(optionData).filter(obj -> !Objects.isNull(obj)).collect(Collectors.toList())); // Make sure only non-null objects are added
     }
 
     public SlashCommandData getCommandData() {
