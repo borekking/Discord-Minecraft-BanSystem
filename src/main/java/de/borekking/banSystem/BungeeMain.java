@@ -125,7 +125,15 @@ public class BungeeMain extends Plugin {
 
     // Utility function to send a message to a minecraft player
     public static void sendMessage(CommandSender sender, String message) {
-        sender.sendMessage(new TextComponent(getPrefix() + message));
+        TextComponent textComponent;
+
+        if (sender instanceof ProxiedPlayer) {
+            textComponent = new TextComponent(getPrefix() + message);
+        } else {
+            textComponent = new TextComponent(message);
+        }
+
+        sender.sendMessage(textComponent);
     }
 
     public static void shutdown() {
