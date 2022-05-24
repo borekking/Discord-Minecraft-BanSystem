@@ -44,7 +44,7 @@ public class GeneralPunishmentHandler implements IPunishHandler {
                 ", " + this.timestampName + ", " + this.timestampEndName + ", " + this.reasonName + ") VALUES(?, ?, ?, ?, ?, ?);");
         this.getPunishStatement = this.database.getPreparedStatement("SELECT * FROM " + this.tableName + " WHERE " + this.userIDName + " = ? AND " + this.platformName + " = ?;");
         this.deletePunishmentStatement = this.database.getPreparedStatement("DELETE FROM " + this.tableName + " WHERE " + this.userIDName + " = ? AND " + this.platformName + " = ?;");
-        this.getAllPunishmentsStatement = this.database.getPreparedStatement("SELECT * FROM " + this.platformName + ";");
+        this.getAllPunishmentsStatement = this.database.getPreparedStatement("SELECT * FROM " + this.tableName + ";");
 
         this.startPunishmentOverCheck();
     }
