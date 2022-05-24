@@ -138,6 +138,8 @@ public class BSBaseCommand extends BSCommand {
     // Get SubCommand from SubCommandGroup
     private BSStandAloneCommand getSubCommandFromGroup(String group, String subCommand) {
         BSSubCommandGroup subCommandGroup = this.subCommandGroups.get(group);
+        if (subCommandGroup == null) return null;
+
         return subCommandGroup.getSubCommand(subCommand);
     }
 
