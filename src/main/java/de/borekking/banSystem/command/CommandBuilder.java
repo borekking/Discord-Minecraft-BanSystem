@@ -19,21 +19,24 @@ public class CommandBuilder {
     }
 
     // Add a single SubCommand
-    public void addSubCommand(BSStandAloneCommand... subCommand) {
+    public CommandBuilder addSubCommand(BSStandAloneCommand... subCommand) {
         this.command.addSubCommands(subCommand);
+        return this;
     }
 
-    public void addSubCommandGroup(String name, String description) {
+    public CommandBuilder addSubCommandGroup(String name, String description) {
         this.subCommandGroups.put(name, new BSSubCommandGroup(name, description));
+        return this;
     }
 
     // Add a subCommand in a subCommandGroup
-    public void addSubCommand(String subCommandGroup, BSStandAloneCommand subCommand) {
+    public CommandBuilder addSubCommand(String subCommandGroup, BSStandAloneCommand subCommand) {
         // Check if subCommandGroup already exists
         BSSubCommandGroup group = this.subCommandGroups.get(subCommandGroup);
-        if (group == null) return; // Group does not exist!
+        if (group == null) return this; // Group does not exist!
 
         group.addSubCommands(subCommand);
+        return this;
     }
 
     public BSCommand create() {
