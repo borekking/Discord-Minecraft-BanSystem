@@ -44,7 +44,7 @@ public class UserManager {
 
     private final SQLClient database;
 
-    private final String userTableName = "user", userIDName = "userID", permissionsName = "permissions";
+    private final String userTableName = "users", userIDName = "userID", permissionsName = "permissions";
 
     private final PreparedStatement addUserToUser, // (1 -> userID, 2 -> permissions)
                                     getAllFromUser, // (1 -> userID)
@@ -115,7 +115,7 @@ public class UserManager {
             // Set ResultSet to first result and check if there is one
             // if not so, result null.
             if (!rs.next()) {
-                return 1L;
+                return -1L;
             }
 
             return rs.getLong(this.userIDName);
