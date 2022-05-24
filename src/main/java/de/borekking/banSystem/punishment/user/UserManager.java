@@ -262,7 +262,7 @@ public class UserManager {
 
         do {
             userID = RandomNumberCreator.getRandomLong();
-        } while (!this.userIDExists(userID));
+        } while (this.userIDExists(userID));
 
         return userID;
     }
