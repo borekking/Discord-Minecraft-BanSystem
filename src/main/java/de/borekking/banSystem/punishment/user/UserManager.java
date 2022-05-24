@@ -73,33 +73,36 @@ public class UserManager {
         this.setGetUserIDFromPlatformPS();
     }
 
-    public void addUser(Platform platform, String platformId, String permission) {
+    // Returns (eventually new) userID.
+    public long addUser(Platform platform, String platformId, String permission) {
         long userID = this.getUserID(platform, platformId);
 
-        // Check platform details do not exist yet
-        if (userID < 0) {
-            userID = this.getNewUserID();
+        // Check platform details do already exist
+        if (userID >= 0) return userID;
 
-            long finalUserID = userID;
-            if (!this.setPSValuesWrapper(this.addUserToUser, statement -> {
-                this.addUserToUser.setLong(1, finalUserID);
-                this.addUserToUser.setString(2, permission);
-            })) {
-                return;
-            }
+        userID = this.getNewUserID();
 
-            PreparedStatement addToPlatform = this.addToPlatformTable.get(platform);
-
-            if (!this.setPSValuesWrapper(addToPlatform, statement -> {
-                addToPlatform.setLong(1, finalUserID);
-                addToPlatform.setString(2, platformId);
-            })) {
-                return;
-            }
-
-            this.database.update(this.addUserToUser);
-            this.database.update(addToPlatform);
+        long finalUserID = userID;
+        if (!this.setPSValuesWrapper(this.addUserToUser, statement -> {
+            this.addUserToUser.setLong(1, finalUserID);
+            this.addUserToUser.setString(2, permission);
+        })) {
+            return -1L;
         }
+
+        PreparedStatement addToPlatform = this.addToPlatformTable.get(platform);
+
+        if (!this.setPSValuesWrapper(addToPlatform, statement -> {
+            addToPlatform.setLong(1, finalUserID);
+            addToPlatform.setString(2, platformId);
+        })) {
+            return -1L;
+        }
+
+        this.database.update(this.addUserToUser);
+        this.database.update(addToPlatform);
+
+        return userID;
     }
 
     public long getUserID(Platform platform, String platformId) {
