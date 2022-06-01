@@ -118,7 +118,7 @@ public class SQLClient {
     public void update(PreparedStatement statement) {
         try {
             statement.executeUpdate();
-            statement.close();
+//            statement.close();
         } catch (SQLException e) {
             this.catchSQLException(e);
         }
