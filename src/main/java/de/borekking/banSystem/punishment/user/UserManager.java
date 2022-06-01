@@ -61,7 +61,7 @@ public class UserManager {
 
         this.createDBTables();
 
-        this.addUserToUser = this.database.getPreparedStatement("INSERT INTO " + this.userTableName + " (?, ?);");
+        this.addUserToUser = this.database.getPreparedStatement("INSERT INTO " + this.userTableName + " VALUES (?, ?);");
         this.getAllFromUser = this.database.getPreparedStatement("SELECT * FROM " + this.userTableName + " WHERE " + this.userIDName + " = ?;");
         this.removeFromUser = this.database.getPreparedStatement("DELETE FROM " + this.userTableName + " WHERE " + this.userIDName + " = ?;");
         this.updateUserPermissions = this.database.getPreparedStatement("UPDATE " + this.userTableName + " SET " + this.permissionsName + " = ? WHERE " + this.userIDName + " = ?;");
@@ -222,7 +222,7 @@ public class UserManager {
     private void setAddToPlatformTablePS() {
         for (Platform platform : Platform.values()) {
             PreparedStatement statement = this.database.getPreparedStatement(
-                    "INSERT INTO " + platform.getDatabaseTableName() + " (?, ?);"
+                    "INSERT INTO " + platform.getDatabaseTableName() + " VALUES (?, ?);"
             );
 
             this.addToPlatformTable.put(platform, statement);
