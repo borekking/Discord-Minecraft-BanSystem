@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class GeneralPunishmentHandler implements IPunishHandler {
 
@@ -64,6 +65,9 @@ public class GeneralPunishmentHandler implements IPunishHandler {
 
     @Override
     public void punish(Punishment punishment, Platform platform) {
+        // Before punishing: Delete old punishments
+        this.unPunish(punishment);
+
         try {
             this.punishStatement.setLong(1, punishment.getUserID());
             this.punishStatement.setLong(2, punishment.getOperatorID());
@@ -84,8 +88,8 @@ public class GeneralPunishmentHandler implements IPunishHandler {
     @Override
     public Punishment getPunishment(long userID, Platform platform) {
         try {
-            this.isPunishedStatement.setLong(1, userID);
-            this.isPunishedStatement.setString(2, platform.getIdentifier());
+            this.getPunishStatement.setLong(1, userID);
+            this.getPunishStatement.setString(2, platform.getIdentifier());
         } catch (SQLException e) {
             this.handleSQLError(e);
             return null;
@@ -98,8 +102,8 @@ public class GeneralPunishmentHandler implements IPunishHandler {
     @Override
     public void unPunish(Punishment punishment) {
         try {
-            this.isPunishedStatement.setLong(1, punishment.getUserID());
-            this.isPunishedStatement.setString(2, punishment.getPlatform().getIdentifier());
+            this.deletePunishmentStatement.setLong(1, punishment.getUserID());
+            this.deletePunishmentStatement.setString(2, punishment.getPlatform().getIdentifier());
         } catch (SQLException e) {
             this.handleSQLError(e);
             return;
@@ -145,15 +149,18 @@ public class GeneralPunishmentHandler implements IPunishHandler {
 
     private void startPunishmentOverCheck() {
         new Thread(() -> {
-            try {
-                Thread.sleep(30_000); // 30 seconds
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            while(true) {
+                try {
+                    Thread.sleep(10_000); // 10 seconds
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
 
-            // Get all punishments, filter for those which are over and call unPunish with them
-            List<Punishment> punishments = this.getAllPunishments();
-            punishments.stream().filter(this::isOver).forEach(this::unPunish);
+                // Get all punishments, filter for those which are over and call unPunish with them
+                List<Punishment> punishments = this.getAllPunishments();
+                List<Punishment> punishmentsOver = punishments.stream().filter(this::isOver).collect(Collectors.toList());
+                punishmentsOver.forEach(this::unPunish);
+            }
         }).start();
     }
 
