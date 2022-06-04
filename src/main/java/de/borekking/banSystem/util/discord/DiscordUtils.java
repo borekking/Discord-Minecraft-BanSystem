@@ -3,6 +3,7 @@ package de.borekking.banSystem.util.discord;
 import de.borekking.banSystem.BungeeMain;
 
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 
@@ -14,6 +15,10 @@ public class DiscordUtils {
 
     public static User getUser(String id) {
         return getUser(Long.parseLong(id));
+    }
+
+    public static Member getMember(Guild guild, User user) {
+        return guild.getMember(user);
     }
 
     public static Role getRole(Long id) {
