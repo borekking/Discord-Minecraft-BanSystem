@@ -39,6 +39,80 @@ import net.md_5.bungee.api.plugin.Plugin;
 
 public class BungeeMain extends Plugin {
 
+    /*
+     * TODO
+     *  1. SQL +
+     *  2. Punishments +
+     *  3. Commands xd (Auto, normal, ...)
+     *     -> Reload: Settings/Config
+     *  3.2 Add Discord Broadcast on mute, unmute, ban unban.
+     *  4. Permissions
+     *  5. Operators (OperatorID) <- w/ permissions
+     *
+     */
+
+    /*
+     * Command System:
+     *    Ban:
+     *    Ban a user.
+     *       MC:
+     *       Ban a minecraft user.
+     *          /ban minecraft normal <uuid/name> <duration> <reason>
+     *          /ban minecraft auto <uuid/name> <auto-id>
+     *       DC:
+     *       Ban a discord user
+     *          /ban discord normal <id/name#tag> <duration> <reason>
+     *          /ban discord auto <id/name#tag> <auto-id>
+     *       All Platforms:
+     *       Ban a user on all platforms
+     *          /ban synced normal <discordID/name#tag/uuid/mc-name> <duration> <reason>
+     *          /ban synced auto <discordID/name#tag/uuid/mc-name> <auto-id>
+     *
+     *    Mute:
+     *    Mute a user.
+     *       MC:
+     *       Mute a minecraft user.
+     *          /mute minecraft normal <uuid/name> <duration> <reason>
+     *          /mute minecraft auto <uuid/name> <auto-id>
+     *       DC:
+     *       Mute a discord user.
+     *          /mute discord normal <id/name#tag> <duration> <reason>
+     *          /mute discord auto <id/name#tag> <auto-id>
+     *       All Platforms:
+     *       Ban a user on all platforms
+     *          /mute synced normal <discordID/name#tag/uuid/mc-name> <duration> <reason>
+     *          /mute synced auto <discordID/name#tag/uuid/mc-name> <auto-id>
+     *
+     * For all:
+     *    normal -> custom duration and reason
+     *    auto -> auto duration and reason
+     *
+     * As Command-Hierarchy:
+     *    ban:
+     *       minecraft:
+     *          normal: <uuid/name> <duration> <reason>
+     *          auto: <uuid/name> <auto-id>
+     *       discord:
+     *          normal: <id/name#tag> <duration> <reason>
+     *          auto: <id/name#tag> <auto-id>
+     *       synced:
+     *          normal: <discordID/name#tag/uuid/mc-name> <duration> <reason>
+     *          auto: <discordID/name#tag/uuid/mc-name> <auto-id>
+     *
+     *    mute:
+     *       minecraft:
+     *          normal: <uuid/name> <duration> <reason>
+     *          auto: <uuid/name> <auto-id>
+     *       discord:
+     *          normal: <id/name#tag> <duration> <reason>
+     *          auto: <id/name#tag> <auto-id>
+     *       synced:
+     *          normal: <discordID/name#tag/uuid/mc-name> <duration> <reason>
+     *          auto: <discordID/name#tag/uuid/mc-name> <auto-id>
+     *
+     *
+     */
+
     // BungeeCord Main class (also overall main class)
 
     // Plugin instance
