@@ -125,20 +125,18 @@ public class BungeeMain extends Plugin {
 
     // Utility function to send a message to a minecraft player
     public static void sendMessage(CommandSender sender, String message1, String... messages) {
-        // Create Message
-        StringJoiner message = new StringJoiner(System.lineSeparator());
-        message.add(message1);
-        for (String msg : messages) {
-            message.add(msg);
-        }
+        // List w/ messages
+        List<String> messageList = new ArrayList<>();
+        messageList.add(message1);
+        messageList.addAll(JavaUtils.getAsList(messages));
 
         // Create TextComponent
         TextComponent textComponent;
 
         if (sender instanceof ProxiedPlayer) {
-            textComponent = new TextComponent(getPrefix() + message);
+            textComponent = new TextComponent(getPrefix() + JavaUtils.getTextWithDelimiter(messageList, "\n" + getPrefix()));
         } else {
-            textComponent = new TextComponent(message.toString());
+            textComponent = new TextComponent(JavaUtils.getTextWithDelimiter(messageList, System.lineSeparator()));
         }
 
         // Send message
@@ -156,6 +154,22 @@ public class BungeeMain extends Plugin {
     // Utility function used for errors
     public static void sendErrorMessage(String message) {
         System.out.println(message);
+    }
+
+    public static ProxiedPlayer getPlayer(UUID uuid) {
+        return instance.getProxy().getPlayer(uuid);
+    }
+
+    public static ProxiedPlayer getPlayer(String player) {
+        return instance.getProxy().getPlayer(player);
+    }
+
+    public static User getUser(long id) {
+        return instance.getUserManager().getUser(id);
+    }
+
+    public static long getUserID(Platform platform, String platformID) {
+        return instance.getUserManager().getUserID(platform, platformID);
     }
 
     public CommandHandler getCommandHandler() {

@@ -24,14 +24,14 @@ public class PostLoginListener implements Listener {
         if (ban == null) return;
 
         if (this.isBanned(ban)) {
-            player.disconnect(new TextComponent("You are banned!"), new TextComponent(ban.getReason()));
+            // TODO Custom message
+            player.disconnect(new TextComponent("You are banned!\n"), new TextComponent(ban.getReason()));
         }
     }
 
     private long getUserID(ProxiedPlayer player) {
         String uuidStr = player.getUniqueId().toString();
-        long userID = BungeeMain.getInstance().getUserManager().getUserID(Platform.MINECRAFT, uuidStr);
-        return userID;
+        return BungeeMain.getUserID(Platform.MINECRAFT, uuidStr);
     }
 
     private Punishment getBan(long userID) {

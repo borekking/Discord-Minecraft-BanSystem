@@ -26,7 +26,7 @@ public class ChatListener implements Listener {
         ProxiedPlayer player = (ProxiedPlayer) connection;
 
         String uuidStr = player.getUniqueId().toString();
-        long userID = BungeeMain.getInstance().getUserManager().getUserID(Platform.MINECRAFT, uuidStr);
+        long userID = BungeeMain.getUserID(Platform.MINECRAFT, uuidStr);
         if (userID < 0) return false;
 
         return BungeeMain.getInstance().getBanHandler().isPunished(userID, Platform.MINECRAFT);
