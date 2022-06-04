@@ -23,11 +23,21 @@ public enum Platform {
     }
 
     public static List<UUID> convertMinecraftIDs(List<String> list) {
-        return list.stream().map(UUID::fromString).collect(Collectors.toList());
+        return list.stream().map(Platform::getMinecraftUUID).collect(Collectors.toList());
     }
 
     public static List<Long> convertDiscordIDs(List<String> list) {
-        return list.stream().map(Long::parseLong).collect(Collectors.toList());
+        return list.stream().map(Platform::getDiscordID).collect(Collectors.toList());
+    }
+
+    public static UUID getMinecraftUUID(String id) {
+        if (id == null) return null;
+        return UUID.fromString(id);
+    }
+
+    public static long getDiscordID(String id) {
+        if (id == null) return -1L;
+        return Long.parseLong(id);
     }
 
     public String getDatabaseTableName() {
