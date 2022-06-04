@@ -24,8 +24,17 @@ public enum ConfigSetting {
     SQL_USER("sql.user",""),
     SQL_PASSWORD("sql.password",""),
 
-    // Ban
-    BAN_DISCORD_MESSAGE("ban.discord.message", "Banned for reason: %reason%");
+    // Ban (Messages)
+    BAN_DISCORD_MESSAGE("ban.discord.message", "Banned for reason: %reason%"),
+
+    BAN_MINECRAFT_MESSAGE("ban.minecraft.message", "You were banned!\n %reason%"),
+
+    // Mute (Messages)
+    MUTE_DISCORD_MUTE("mute.discord.mute.message", ""),
+    MUTE_DISCORD_UNMUTE("mute.discord.unmute.message", ""),
+
+    MUTE_MINECRAFT_MUTE("mute.minecraft.mute.message", ""),
+    MUTE_MINECRAFT_UNMUTE("mute.minecraft.unmute.message", "");
 
     private final String path; // Key
     private Object value; // Value
