@@ -4,7 +4,7 @@ import de.borekking.banSystem.command.BSCommand;
 import de.borekking.banSystem.command.CommandBuilder;
 import de.borekking.banSystem.command.CommandHandler;
 import de.borekking.banSystem.command.commands.other.HelpCommand;
-import de.borekking.banSystem.command.commands.ban.BanMinecraftCommand;
+import de.borekking.banSystem.command.commands.ban.minecraft.BanMinecraftCommand;
 import de.borekking.banSystem.config.ConfigHandler;
 import de.borekking.banSystem.config.ConfigSetting;
 import de.borekking.banSystem.config.autoReason.AutoReasonHandler;
@@ -49,6 +49,11 @@ public class BungeeMain extends Plugin {
      *  4. Permissions
      *  5. Operators (OperatorID) <- w/ permissions
      *
+     * TODO - rn
+     *  1. UserManager: Methode for getting User or creating new one on Not found (given Platform and PlatformId)
+     *  2. BungeeMain: Function for getting UUID from uuid or player name String.
+     *  3. BungeeMain: Function for getting discordID from discordID/Tag/Name#Tag/....
+     *
      */
 
     /*
@@ -63,10 +68,22 @@ public class BungeeMain extends Plugin {
      *       Ban a discord user
      *          /ban discord normal <id/name#tag> <duration> <reason>
      *          /ban discord auto <id/name#tag> <auto-id>
-     *       All Platforms:
-     *       Ban a user on all platforms
+     *       Synced:
+     *       Ban a user on all platforms.
      *          /ban synced normal <discordID/name#tag/uuid/mc-name> <duration> <reason>
      *          /ban synced auto <discordID/name#tag/uuid/mc-name> <auto-id>
+     *
+     *    Unban:
+     *    Unban a user.
+     *       MC:
+     *       Unban a minecraft user.
+     *          /unban minecraft <uuid/name>
+     *       DC:
+     *       Unban a discord user.
+     *          /unban discord <id/name#tag>
+     *       Synced:
+     *       Unban a user on all platforms.
+     *          /unban synced <discordID/name#tag/uuid/mc-name>
      *
      *    Mute:
      *    Mute a user.
@@ -78,10 +95,22 @@ public class BungeeMain extends Plugin {
      *       Mute a discord user.
      *          /mute discord normal <id/name#tag> <duration> <reason>
      *          /mute discord auto <id/name#tag> <auto-id>
-     *       All Platforms:
+     *       Synced:
      *       Ban a user on all platforms
      *          /mute synced normal <discordID/name#tag/uuid/mc-name> <duration> <reason>
      *          /mute synced auto <discordID/name#tag/uuid/mc-name> <auto-id>
+     *
+     *    Unmute:
+     *    Unmute a user.
+     *       MC:
+     *       Unmute a minecraft user.
+     *          /unmute minecraft <uuid/name>
+     *       DC:
+     *       Unmute a discord user.
+     *          /unmute discord <id/name#tag>
+     *       Synced:
+     *       Unmute a user on all platforms.
+     *          /unmute synced <discordID/name#tag/uuid/mc-name>
      *
      * For all:
      *    normal -> custom duration and reason
@@ -99,6 +128,11 @@ public class BungeeMain extends Plugin {
      *          normal: <discordID/name#tag/uuid/mc-name> <duration> <reason>
      *          auto: <discordID/name#tag/uuid/mc-name> <auto-id>
      *
+     *    unban:
+     *       minecraft: <uuid/name>
+     *       discord: <id/name#tag>
+     *       synced: <discordID/name#tag/uuid/mc-name>
+     *
      *    mute:
      *       minecraft:
      *          normal: <uuid/name> <duration> <reason>
@@ -110,6 +144,10 @@ public class BungeeMain extends Plugin {
      *          normal: <discordID/name#tag/uuid/mc-name> <duration> <reason>
      *          auto: <discordID/name#tag/uuid/mc-name> <auto-id>
      *
+     *    unmute:
+     *       minecraft: <uuid/name>
+     *       discord: <id/name#tag>
+     *       synced: <discordID/name#tag/uuid/mc-name>
      *
      */
 
