@@ -1,5 +1,6 @@
 package de.borekking.banSystem.command;
 
+import de.borekking.banSystem.util.JavaUtils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -55,5 +56,18 @@ public class BSSubCommandGroup implements CommandPart {
     @Override
     public String getDescription() {
         return description;
+    }
+
+    @Override
+    public String[] getUsage() {
+        String[] arr1 = new String[]{this.name + ":", this.description};
+        String[] arr2 = new String[this.subCommands.size()];
+
+        int i = 0;
+        for (BSStandAloneCommand subCommand : this.subCommands.values()) {
+            arr2[i] = " - " + subCommand.getName();
+            i++;
+        }
+        return JavaUtils.mergeArrays(arr1, new String[]{});
     }
 }

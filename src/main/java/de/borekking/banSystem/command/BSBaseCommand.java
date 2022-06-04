@@ -1,5 +1,7 @@
 package de.borekking.banSystem.command;
 
+import de.borekking.banSystem.BungeeMain;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -46,13 +48,15 @@ public class BSBaseCommand extends BSCommand {
         for (BSStandAloneCommand command : subCommands) {
             if (command == null) continue; // Skip if null
 
+            String name = command.getName().toLowerCase();
+
             // Make sure no subCommand and subCommandGroup have the same name.
             // Check for doubled subCommands too.
-            if (this.subCommandGroups.containsKey(command.getName()) || this.subCommands.containsKey(command.getName())) {
-                throw new IllegalArgumentException("Tried to add SubCommand (" +  command.getName() +  ") but SubCommand or SubCommandGroup already existed!");
+            if (this.subCommandGroups.containsKey(name) || this.subCommands.containsKey(name)) {
+                throw new IllegalArgumentException("Tried to add SubCommand (" + name +  ") but SubCommand or SubCommandGroup already existed!");
             }
 
-            this.subCommands.put(command.getName(), command);
+            this.subCommands.put(name, command);
         }
     }
 
@@ -61,13 +65,15 @@ public class BSBaseCommand extends BSCommand {
         for (BSSubCommandGroup subCommandGroup : subCommandGroups) {
             if (subCommandGroup == null) continue; // Skip if null
 
+            String name = subCommandGroup.getName().toLowerCase();
+
             // Make sure no subCommand and subCommandGroup have the same name.
             // Check for doubled subCommands too.
-            if (this.subCommandGroups.containsKey(subCommandGroup.getName()) || this.subCommands.containsKey(subCommandGroup.getName())) {
+            if (this.subCommandGroups.containsKey(name) || this.subCommands.containsKey(name)) {
                 throw new IllegalArgumentException("Tried to add SubCommandGroup (" +  subCommandGroup.getName() +  ") but SubCommand or SubCommandGroup already existed!");
             }
 
-            this.subCommandGroups.put(subCommandGroup.getName(), subCommandGroup);
+            this.subCommandGroups.put(name, subCommandGroup);
         }
     }
 
@@ -81,7 +87,13 @@ public class BSBaseCommand extends BSCommand {
             argsRemove = 2;
         }
 
-        if (command == null) return;
+        if (command == null) {
+            // Send help message, with commands that can be used
+            BungeeMain.sendMessage(sender, "Unknown Sub-Command/Sub-Command-Group!", "Available Sub-Commands:",
+                    String.join(", ", this.subCommands.keySet()), "Available Sub-Command-Groups: ", String.join(", ", this.subCommandGroups.keySet()));
+
+            return;
+        }
 
         String[] newArgs = Arrays.copyOfRange(args, argsRemove, args.length);
         command.execute(sender, newArgs);
@@ -97,7 +109,11 @@ public class BSBaseCommand extends BSCommand {
             command = this.getSubCommandFromGroup(group, subCommand);
         }
 
-        if (command == null) return;
+        if (command == null) {
+            // Send help message, with commands that can be used
+            // TODO s.o.
+            return;
+        }
 
         command.perform(event);
     }
@@ -132,15 +148,18 @@ public class BSBaseCommand extends BSCommand {
 
     // Get direct SubCommand
     private BSStandAloneCommand getSubCommand(String subCommand) {
-        return this.subCommands.get(subCommand);
+        if (subCommand == null) return null;
+        return this.subCommands.get(subCommand.toLowerCase());
     }
 
     // Get SubCommand from SubCommandGroup
     private BSStandAloneCommand getSubCommandFromGroup(String group, String subCommand) {
-        BSSubCommandGroup subCommandGroup = this.subCommandGroups.get(group);
+        if (group == null || subCommand == null) return null;
+
+        BSSubCommandGroup subCommandGroup = this.subCommandGroups.get(group.toLowerCase());
         if (subCommandGroup == null) return null;
 
-        return subCommandGroup.getSubCommand(subCommand);
+        return subCommandGroup.getSubCommand(subCommand.toLowerCase());
     }
 
     private Collection<SubcommandData> createSubCommandDataList(Collection<BSStandAloneCommand> subCommands) {

@@ -1,5 +1,6 @@
 package de.borekking.banSystem.command;
 
+import de.borekking.banSystem.util.JavaUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -20,6 +21,13 @@ public abstract class BSStandAloneCommand extends BSCommand {
 
         this.options = new ArrayList<>();
         this.options.addAll(Arrays.stream(optionData).filter(obj -> !Objects.isNull(obj)).collect(Collectors.toList())); // Make sure only non-null objects are added
+    }
+
+    @Override
+    public String[] getUsage() {
+        String[] arr1 = super.getUsage();
+        String[] arr2 = this.options.stream().map(option -> String.format("   %s: %s (%s)", option.getName(), option.getType(), option.getDescription())).toArray(String[]::new);
+        return JavaUtils.mergeArrays(arr1, arr2);
     }
 
     public SlashCommandData getCommandData() {

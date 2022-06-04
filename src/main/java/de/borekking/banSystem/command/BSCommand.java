@@ -26,6 +26,11 @@ public abstract class BSCommand extends Command implements CommandPart {
     }
 
     @Override
+    public String[] getUsage() {
+        return new String[] { this.name + ":", this.description};
+    }
+
+    @Override
     public String getName() {
         return name;
     }

@@ -5,4 +5,7 @@ public interface CommandPart {
     String getName();
 
     String getDescription();
+
+    String[] getUsage();
+
 }
