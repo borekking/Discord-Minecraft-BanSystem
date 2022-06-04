@@ -1,8 +1,10 @@
 package de.borekking.banSystem;
 
 import de.borekking.banSystem.command.BSCommand;
+import de.borekking.banSystem.command.CommandBuilder;
 import de.borekking.banSystem.command.CommandHandler;
 import de.borekking.banSystem.command.commands.other.HelpCommand;
+import de.borekking.banSystem.command.commands.ban.BanMinecraftCommand;
 import de.borekking.banSystem.config.ConfigHandler;
 import de.borekking.banSystem.config.ConfigSetting;
 import de.borekking.banSystem.config.autoReason.AutoReasonHandler;
@@ -10,17 +12,28 @@ import de.borekking.banSystem.discord.DiscordBot;
 import de.borekking.banSystem.minecraft.listener.ChatListener;
 import de.borekking.banSystem.minecraft.listener.PostLoginListener;
 import de.borekking.banSystem.punishment.GeneralPunishmentHandler;
+import de.borekking.banSystem.punishment.Platform;
 import de.borekking.banSystem.punishment.PunishmentType;
+import de.borekking.banSystem.punishment.user.User;
 import de.borekking.banSystem.punishment.user.UserManager;
 import de.borekking.banSystem.sql.SQLClient;
 import de.borekking.banSystem.util.JarUtils;
+import de.borekking.banSystem.util.JavaUtils;
 import de.borekking.banSystem.util.discord.DiscordUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
 
@@ -104,6 +117,38 @@ public class BungeeMain extends Plugin {
 
     private void registerListener(Listener listener) {
         instance.getProxy().getPluginManager().registerListener(this, listener);
+    }
+
+    public static boolean hasPermission(Platform platform, String platformID) {
+        // TODO Permission System
+//        long userID = getUserID(platform, platformID);
+//        if (userID < 0) return false;
+//
+//        User user = getUser(userID);
+//        if (user == null) return false;
+//
+//        return user.hasPermissions(permission);
+
+        // Return true if user
+        switch(platform) {
+            case MINECRAFT: {
+                UUID uuid = Platform.getMinecraftUUID(platformID);
+                ProxiedPlayer player = BungeeMain.getPlayer(uuid);
+                if (player == null) return false;
+                return player.getGroups().contains("admin");
+            }
+            case DISCORD: {
+                long discordID = Platform.getDiscordID(platformID);
+                net.dv8tion.jda.api.entities.User discordUser = DiscordUtils.getUser(discordID);
+                if (discordUser == null) return false;
+
+                Member member = DiscordUtils.getMember(BungeeMain.getInstance().getGuild(), discordUser);
+                if (member == null) return false;
+
+                return member.hasPermission(Permission.ADMINISTRATOR);
+            }
+        }
+        return false;
     }
 
     private BSCommand[] createCommands() {

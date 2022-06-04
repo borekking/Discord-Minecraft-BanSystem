@@ -2,6 +2,7 @@ package de.borekking.banSystem.discord.listener;
 
 import de.borekking.banSystem.BungeeMain;
 import de.borekking.banSystem.command.BSCommand;
+import de.borekking.banSystem.punishment.Platform;
 import de.borekking.banSystem.util.discord.MyEmbedBuilder;
 
 import java.awt.Color;
@@ -19,11 +20,11 @@ public class SlashCommandListener extends ListenerAdapter {
 
         BSCommand command = BungeeMain.getInstance().getCommandHandler().getCommand(name); // Get Command from CommandHandler from BungeeMain
 
-//        TODO Add Permission check
-//        if () {
-//            this.sendNoPermissions(event);
-//            return;
-//        }
+        //  TODO Permissions System
+        if (event.getMember() == null || !BungeeMain.hasPermission(Platform.DISCORD, event.getMember().getId())) {
+            this.sendNoPermissions(event);
+            return;
+        }
 
         command.perform(event);
     }

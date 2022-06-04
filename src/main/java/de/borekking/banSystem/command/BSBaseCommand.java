@@ -2,6 +2,7 @@ package de.borekking.banSystem.command;
 
 import de.borekking.banSystem.BungeeMain;
 
+import de.borekking.banSystem.punishment.Platform;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -14,6 +15,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class BSBaseCommand extends BSCommand {
 
@@ -28,7 +30,12 @@ public class BSBaseCommand extends BSCommand {
      *        -> subCommand
      *               -> options
      *
-     * (Discord) Note: Command itself is not usable if there are subCommandGroups or subCommands
+     * (Discord) Note:
+     *    - Command itself is not usable if there are subCommandGroups or subCommands
+     *    - SubCommandGroups can not be used as commands (ig)
+     *
+     * see:
+     *    https://discord.com/developers/docs/interactions/application-commands#subcommands-and-subcommand-groups
      *
      */
 
@@ -79,6 +86,12 @@ public class BSBaseCommand extends BSCommand {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
+        // Check Permission for MC users
+        if (sender instanceof ProxiedPlayer && !BungeeMain.hasPermission(Platform.MINECRAFT,
+                String.valueOf(((ProxiedPlayer) sender).getUniqueId()))) {
+            return;
+        }
+
         int argsRemove = 1;
         BSStandAloneCommand command = this.getSubCommand(args);
 
