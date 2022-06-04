@@ -107,8 +107,9 @@ public class BungeeMain extends Plugin {
     }
 
     private BSCommand[] createCommands() {
-        return new BSCommand[] {
-            new HelpCommand()
+        return new BSCommand[]{
+                new HelpCommand(),
+                new CommandBuilder("ban", "Ban users").addSubCommand(new BanMinecraftCommand()).create()
         };
     }
 
