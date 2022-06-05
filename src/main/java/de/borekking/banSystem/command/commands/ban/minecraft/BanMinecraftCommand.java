@@ -1,4 +1,4 @@
-package de.borekking.banSystem.command.commands.ban;
+package de.borekking.banSystem.command.commands.ban.minecraft;
 
 import de.borekking.banSystem.BungeeMain;
 import de.borekking.banSystem.command.BSStandAloneCommand;
@@ -29,7 +29,7 @@ public class BanMinecraftCommand extends BSStandAloneCommand {
      */
 
     public BanMinecraftCommand() {
-        super("minecraft", "Ban a minecraft user",
+        super("normal", "Ban a minecraft (normal)",
                 new OptionData(OptionType.STRING, "user", "Minecraft username or UUID").setRequired(true),
                 new OptionData(OptionType.STRING, "duration", "Duration of ban").setRequired(true),
                 new OptionData(OptionType.STRING, "reason", "Optional: Provide Reason"));
