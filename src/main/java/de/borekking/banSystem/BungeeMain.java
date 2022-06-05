@@ -3,6 +3,7 @@ package de.borekking.banSystem;
 import de.borekking.banSystem.command.BSCommand;
 import de.borekking.banSystem.command.CommandBuilder;
 import de.borekking.banSystem.command.CommandHandler;
+import de.borekking.banSystem.command.commands.ban.minecraft.BanMinecraftAuto;
 import de.borekking.banSystem.command.commands.other.HelpCommand;
 import de.borekking.banSystem.command.commands.ban.minecraft.BanMinecraftCommand;
 import de.borekking.banSystem.config.ConfigHandler;
@@ -149,6 +150,8 @@ public class BungeeMain extends Plugin {
      *       discord: <id/name#tag>
      *       synced: <discordID/name#tag/uuid/mc-name>
      *
+     * Every SubCommand has to be a class.
+     *
      */
 
     // BungeeCord Main class (also overall main class)
@@ -176,6 +179,10 @@ public class BungeeMain extends Plugin {
     @Override
     public void onEnable() {
         new ConfigHandler(); // Create new ConfigHandler to create ConfigFile and Set ConfigSettings
+
+        // Create AutoBanHandler and AutoMuteHandler
+        this.autoBans = new AutoReasonHandler("autopunishments", "bans");
+        this.autoMutes = new AutoReasonHandler("autopunishments", "mutes");
 
         BSCommand[] commands = this.createCommands();
         this.commandHandler = new CommandHandler(commands); // Load commands (discord and minecraft)
@@ -266,7 +273,11 @@ public class BungeeMain extends Plugin {
     private BSCommand[] createCommands() {
         return new BSCommand[]{
                 new HelpCommand(),
-                new CommandBuilder("ban", "Ban users").addSubCommand(new BanMinecraftCommand()).create()
+                new CommandBuilder("ban", "Ban users")
+                        .addSubCommandGroup("minecraft", "Ban a minecraft user.")
+                        .addSubCommand("minecraft", new BanMinecraftCommand())
+                        .addSubCommand("minecraft", new BanMinecraftAuto(this.autoBans))
+                        .create()
         };
     }
 
@@ -291,6 +302,7 @@ public class BungeeMain extends Plugin {
         // Create TextComponent
         TextComponent textComponent;
 
+        // Send either text with prefix (players) or without (else)
         if (sender instanceof ProxiedPlayer) {
             textComponent = new TextComponent(getPrefix() + JavaUtils.getTextWithDelimiter(messageList, "\n" + getPrefix()));
         } else {
@@ -360,6 +372,10 @@ public class BungeeMain extends Plugin {
 
     public UserManager getUserManager() {
         return userManager;
+    }
+
+    public Guild getGuild() {
+        return discordBot.getGuild();
     }
 
     public static BungeeMain getInstance() {
