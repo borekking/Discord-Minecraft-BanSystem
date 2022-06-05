@@ -198,10 +198,6 @@ public class BungeeMain extends Plugin {
         this.banHandler = new GeneralPunishmentHandler(this.sqlClient, "ban", PunishmentType.BAN);
         this.muteHandler = new GeneralPunishmentHandler(this.sqlClient, "mute", PunishmentType.MUTE);
 
-        // Create AutoBanHandler and AutoMuteHandler
-        this.autoBans = new AutoReasonHandler("autopunishments", "bans");
-        this.autoMutes = new AutoReasonHandler("autopunishments", "mutes");
-
         // Create User Manager
         this.userManager = new UserManager(this.sqlClient);
 
