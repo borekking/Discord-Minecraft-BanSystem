@@ -3,6 +3,7 @@ package de.borekking.banSystem.config.autoReason;
 import de.borekking.banSystem.config.ConfigFile;
 import de.borekking.banSystem.duration.Duration;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,5 +85,9 @@ public class AutoReasonHandler {
 
     private void addAutoReason(AutoReason reason) {
         this.reasons.put(reason.getId(), reason);
+    }
+
+    public List<Integer> getIds() {
+        return new ArrayList<>(this.reasons.keySet());
     }
 }
