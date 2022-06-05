@@ -3,10 +3,17 @@ package de.borekking.banSystem.util.minecraft;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+import com.google.gson.JsonParser;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Scanner;
 import java.util.UUID;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class MinecraftUUIDUtils {
 
@@ -20,6 +27,36 @@ public class MinecraftUUIDUtils {
     static {
         SESSION_SERVER_URL = "https://sessionserver.mojang.com/session/minecraft/profile/";
         API_URL = "https://api.mojang.com/users/profiles/minecraft/";
+    }
+
+    public static UUID getUUIDFromName(String name) throws NoSuchPlayerException {
+        String uuid = "";
+        try {
+            BufferedReader in = new BufferedReader(new InputStreamReader(new URL("https://api.mojang.com/users/profiles/minecraft/" + name).openStream()));
+            uuid = (((JsonObject)new JsonParser().parse(in)).get("id")).toString().replaceAll("\"", "");
+            uuid = uuid.replaceAll("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})", "$1-$2-$3-$4-$5");
+            in.close();
+        } catch (Exception e) {
+//            System.out.println("Unable to get UUID of: " + name + "!");
+//            uuid = "er";
+            throw new NoSuchPlayerException();
+//            return null;
+        }
+        return MinecraftUUIDUtils.getUUID(uuid);
+    }
+
+    public static String readInputStreamAsString(InputStream in)
+            throws IOException {
+
+        BufferedInputStream bis = new BufferedInputStream(in);
+        ByteArrayOutputStream buf = new ByteArrayOutputStream();
+        int result = bis.read();
+        while(result != -1) {
+            byte b = (byte)result;
+            buf.write(b);
+            result = bis.read();
+        }
+        return buf.toString();
     }
 
     public static UUID getUUIDFromPlayerName(String playerName) throws NoSuchPlayerException {
