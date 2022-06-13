@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
+import java.util.function.Function;
 
 public class JavaUtils {
 
@@ -20,23 +21,28 @@ public class JavaUtils {
         return String.join(delimiter, list);
     }
 
-    public static String[] mergeArrays(String[]... arrays) {
+    @SafeVarargs
+    public static <T> T[] mergeArrays(Function<Integer, T[]> arrayCreator, T[]... arrays) {
         int length = 0;
-        for (String[] arr : arrays) {
+        for (T[] arr : arrays) {
             length += arr.length;
         }
 
-        int i = 0;
-        String[] array = new String[length];
+        T[] array = arrayCreator.apply(length);
 
-        for(String[] arr : arrays) {
-            for (String s : arr) {
-                array[i] = s;
+        int i = 0;
+        for(T[] arr : arrays) {
+            for (T t : arr) {
+                array[i] = t;
                 i++;
             }
         }
 
         return array;
+    }
+
+    public static String[] mergeArrays(String[]... arrays) {
+        return mergeArrays(String[]::new, arrays);
     }
 
     // {"hey", "was", "up"} -> "hey was up".
