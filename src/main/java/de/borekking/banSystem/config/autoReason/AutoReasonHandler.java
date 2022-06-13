@@ -77,7 +77,7 @@ public class AutoReasonHandler {
         }
 
         String name = split[1], durationStr = split[2];
-        long duration = Duration.getValueOfOne(durationStr);
+        long duration = Duration.getValueOf(durationStr);
 
         AutoReason autoReason = new AutoReason(id, duration, name);
         this.addAutoReason(autoReason);

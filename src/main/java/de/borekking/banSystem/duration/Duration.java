@@ -12,8 +12,12 @@ public final class Duration {
         }
     }
 
+    public static long getValueOf(String str) throws IllegalDurationException {
+        return getValueOfMultiple(str);
+    }
+
     // One or more string of form <a><t> (see below) separated by strings.
-    public static long getValueOfMultiple(String str) throws IllegalDurationException {
+    private static long getValueOfMultiple(String str) throws IllegalDurationException {
         String[] arr = str.split(" ");
         if (arr.length == 0) return 0L;
 
@@ -34,7 +38,7 @@ public final class Duration {
     // Receives string of form <a><t> where <a> is an integer, and <t> is a shortname from TimeEnum
     // e.g. 7d, 23min.
     // Returns long value a * t.millis.
-    public static long getValueOfOne(String str) throws IllegalDurationException {
+    private static long getValueOfOne(String str) throws IllegalDurationException {
         // Find index of first letter -> for <t>
         int len = str.length(), index = str.length();
 
