@@ -3,9 +3,10 @@ package de.borekking.banSystem;
 import de.borekking.banSystem.command.BSCommand;
 import de.borekking.banSystem.command.CommandBuilder;
 import de.borekking.banSystem.command.CommandHandler;
-import de.borekking.banSystem.command.commands.ban.minecraft.BanMinecraftAuto;
+import de.borekking.banSystem.command.commands.punish.punish.PunishAutoCommand;
+import de.borekking.banSystem.command.commands.punish.punish.PunishNormalCommand;
+import de.borekking.banSystem.command.commands.punish.unpunish.UnpunishCommand;
 import de.borekking.banSystem.command.commands.other.HelpCommand;
-import de.borekking.banSystem.command.commands.ban.minecraft.BanMinecraftCommand;
 import de.borekking.banSystem.config.ConfigHandler;
 import de.borekking.banSystem.config.ConfigSetting;
 import de.borekking.banSystem.config.autoReason.AutoReasonHandler;
@@ -42,19 +43,21 @@ public class BungeeMain extends Plugin {
 
     /*
      * TODO
-     *  1. SQL +
-     *  2. Punishments +
-     *  3. Commands xd (Auto, normal, ...)
-     *     -> Reload: Settings/Config
-     *  3.2 Add Discord Broadcast on mute, unmute, ban unban.
-     *  4. Permissions
-     *  5. Operators (OperatorID) <- w/ permissions
-     *
-     * TODO - rn
-     *  1. UserManager: Methode for getting User or creating new one on Not found (given Platform and PlatformId)
-     *  2. BungeeMain: Function for getting UUID from uuid or player name String.
-     *  3. BungeeMain: Function for getting discordID from discordID/Tag/Name#Tag/....
-     *
+     *  1. Broadcaster: On Mute, un-mute, ... -> PunishmentType
+     *  2. Merge Command: UserManager::merge: long : userIDA, long : userIDB ->
+     *     -> /merge <m/d> <userA> <m/d> <userB>
+     *  3. Unmerge Command: <- Doen't make sense -> Do /remove link <platform> <user> <platformID to remove>
+     *  4. OperatorID: While doing punishments, un-punishments: Get/Create User (BSUtils:getAndCreateOnAbsent) -> add to Punishment
+     *  5. Permissions:
+     *        - add permissions: <user> <platform> <permissions>
+     *        - remove permissions: <user> <platform> <permissions>
+     *        - Add Permissions to Commands as attribute -> check permissions (UserManager:getUser)
+     *        - e.g. "ban.*", "ban.minecraft.auto"
+     *  6. Other Commands:
+     *        - Durations
+     *        - Auto-IDs
+     *        - Help
+     *        - Reload -> implement reload shit
      */
 
     /*
@@ -129,11 +132,6 @@ public class BungeeMain extends Plugin {
      *          normal: <discordID/name#tag/uuid/mc-name> <duration> <reason>
      *          auto: <discordID/name#tag/uuid/mc-name> <auto-id>
      *
-     *    unban:
-     *       minecraft: <uuid/name>
-     *       discord: <id/name#tag>
-     *       synced: <discordID/name#tag/uuid/mc-name>
-     *
      *    mute:
      *       minecraft:
      *          normal: <uuid/name> <duration> <reason>
@@ -145,10 +143,21 @@ public class BungeeMain extends Plugin {
      *          normal: <discordID/name#tag/uuid/mc-name> <duration> <reason>
      *          auto: <discordID/name#tag/uuid/mc-name> <auto-id>
      *
+     *    unban:
+     *       minecraft: <uuid/name>
+     *       discord: <id/name#tag>
+     *       synced: <discordID/name#tag/uuid/mc-name>
+     *
      *    unmute:
      *       minecraft: <uuid/name>
      *       discord: <id/name#tag>
      *       synced: <discordID/name#tag/uuid/mc-name>
+     *
+     *    -> Procedure: Get userID by Platform and PlatformID (BungeeMain),
+     *                  Get Punishment from associated GPH,
+     *                  Remove Punishment with associated GPH
+     *    -> Abstract class using abstract Methode:String to get userID.
+     *
      *
      * Every SubCommand has to be a class.
      *
@@ -174,6 +183,7 @@ public class BungeeMain extends Plugin {
     public void onLoad() {
         instance = this;
         JarUtils.importJars(this, "JDA-5.0.0-alpha.11_1e25ede-withDependencies-min.jar");
+        JarUtils.importJars(this, "postgresql-42.3.5.jar");
     }
 
     @Override
@@ -184,19 +194,19 @@ public class BungeeMain extends Plugin {
         this.autoBans = new AutoReasonHandler("autopunishments", "bans");
         this.autoMutes = new AutoReasonHandler("autopunishments", "mutes");
 
+        // Create SQL Client (Before PunishmentHandlers!)
+        this.sqlClient = new SQLClient(ConfigSetting.SQL_HOST.getValueAsString(), ConfigSetting.SQL_DATABASE.getValueAsString(),
+                ConfigSetting.SQL_USER.getValueAsString(), ConfigSetting.SQL_PASSWORD.getValueAsString());
+
+        // Create PunishmentHandlers (Before Commands!)
+        this.banHandler = new GeneralPunishmentHandler(this.sqlClient, "ban", PunishmentType.BAN);
+        this.muteHandler = new GeneralPunishmentHandler(this.sqlClient, "mute", PunishmentType.MUTE);
+
         BSCommand[] commands = this.createCommands();
         this.commandHandler = new CommandHandler(commands); // Load commands (discord and minecraft)
 
         this.registerCommands(commands);
         this.registerListeners();
-
-        // Create SQL Client
-        this.sqlClient = new SQLClient(ConfigSetting.SQL_HOST.getValueAsString(), ConfigSetting.SQL_DATABASE.getValueAsString(),
-                ConfigSetting.SQL_USER.getValueAsString(), ConfigSetting.SQL_PASSWORD.getValueAsString());
-
-        // Create PunishmentHandlers
-        this.banHandler = new GeneralPunishmentHandler(this.sqlClient, "ban", PunishmentType.BAN);
-        this.muteHandler = new GeneralPunishmentHandler(this.sqlClient, "mute", PunishmentType.MUTE);
 
         // Create User Manager
         this.userManager = new UserManager(this.sqlClient);
@@ -245,7 +255,7 @@ public class BungeeMain extends Plugin {
 //        return user.hasPermissions(permission);
 
         // Return true if user
-        switch(platform) {
+        switch (platform) {
             case MINECRAFT: {
                 UUID uuid = Platform.getMinecraftUUID(platformID);
                 ProxiedPlayer player = BungeeMain.getPlayer(uuid);
@@ -254,7 +264,7 @@ public class BungeeMain extends Plugin {
             }
             case DISCORD: {
                 long discordID = Platform.getDiscordID(platformID);
-                net.dv8tion.jda.api.entities.User discordUser = DiscordUtils.getUser(discordID);
+                net.dv8tion.jda.api.entities.User discordUser = DiscordUtils.getUserByID(discordID);
                 if (discordUser == null) return false;
 
                 Member member = DiscordUtils.getMember(BungeeMain.getInstance().getGuild(), discordUser);
@@ -267,14 +277,77 @@ public class BungeeMain extends Plugin {
     }
 
     private BSCommand[] createCommands() {
-        return new BSCommand[]{
-                new HelpCommand(),
+        BSCommand[] commands = new BSCommand[]{
+                // ----- Other -----
+
+                // ----- Ban -----
                 new CommandBuilder("ban", "Ban users")
-                        .addSubCommandGroup("minecraft", "Ban a minecraft user.")
-                        .addSubCommand("minecraft", new BanMinecraftCommand())
-                        .addSubCommand("minecraft", new BanMinecraftAuto(this.autoBans))
+                        // Add sub-command-groups
+                        .addSubCommandGroup("minecraft", "Ban a minecraft user")
+                        .addSubCommandGroup("discord", "Ban a discord user")
+                        .addSubCommandGroup("synced", "Ban user on discord and minecraft")
+                        // Add SubCommands for groups
+                        .addSubCommand("minecraft", new PunishNormalCommand("normal", "Ban a minecraft user (normal)",
+                                "Minecraft user by uuid or username", this.banHandler, Platform.MINECRAFT))
+                        .addSubCommand("minecraft", new PunishAutoCommand("auto", "Ban a minecraft user (auto))",
+                                "Minecraft user by uuid or username", this.banHandler, this.autoBans, Platform.MINECRAFT))
+
+                        .addSubCommand("discord", new PunishNormalCommand("normal", "Ban a discord user (normal)",
+                                "Discord user by id or tag", this.banHandler, Platform.DISCORD))
+                        .addSubCommand("discord", new PunishAutoCommand("auto", "Ban a discord user (auto))",
+                                "Discord user by id or tag", this.banHandler, this.autoBans, Platform.DISCORD))
+
+                        .addSubCommand("synced", new PunishNormalCommand("normal", "Ban a user synced (dc and mc, normal)",
+                                "Discord user by id or tag", this.banHandler, Platform.DISCORD, Platform.MINECRAFT))
+                        .addSubCommand("synced", new PunishAutoCommand("auto", "Ban a user synced (dc and mc, auto))",
+                                "ID: Minecraft (uuid/name) or Discord (id/tag)", this.banHandler, this.autoBans, Platform.DISCORD, Platform.MINECRAFT))
+                        .create(),
+                // ----- Unban -----
+                new CommandBuilder("unban", "Unban users")
+                        .addSubCommand(new UnpunishCommand("minecraft", "Unban a minecraft user",
+                                "Minecraft user by uuid or username", this.banHandler, Platform.MINECRAFT))
+                        .addSubCommand(new UnpunishCommand("discord",
+                                "Unban a discord user", "Discord user by id or tag",
+                                this.banHandler, Platform.DISCORD))
+                        .addSubCommand(new UnpunishCommand("synced", "Unban on all platforms (dc, mc)",
+                                "ID: Minecraft (uuid/name) or Discord (id/tag)", this.banHandler, Platform.DISCORD, Platform.MINECRAFT))
+                        .create(),
+                // ----- Mute -----
+                new CommandBuilder("mute", "Mute users")
+                        // Add sub-command-groups
+                        .addSubCommandGroup("minecraft", "Mute a minecraft user")
+                        .addSubCommandGroup("discord", "Mute a discord user")
+                        .addSubCommandGroup("synced", "Mute user on discord and minecraft")
+                        // Add SubCommands for groups
+                        .addSubCommand("minecraft", new PunishNormalCommand("normal", "Mute a minecraft user (normal)",
+                                "Minecraft user by uuid or username", this.muteHandler, Platform.MINECRAFT))
+                        .addSubCommand("minecraft", new PunishAutoCommand("auto", "Mute a minecraft user (auto))",
+                                "Minecraft user by uuid or username", this.muteHandler, this.autoMutes, Platform.MINECRAFT))
+
+                        .addSubCommand("discord", new PunishNormalCommand("normal", "Mute a discord user (normal)",
+                                "Discord user by id or tag", this.muteHandler, Platform.DISCORD))
+                        .addSubCommand("discord", new PunishAutoCommand("auto", "Mute a discord user (auto))",
+                                "Discord user by id or tag", this.muteHandler, this.autoMutes, Platform.DISCORD))
+
+                        .addSubCommand("synced", new PunishNormalCommand("normal", "Mute a user synced (dc and mc, normal)",
+                                "Discord user by id or tag", this.muteHandler, Platform.DISCORD, Platform.MINECRAFT))
+                        .addSubCommand("synced", new PunishAutoCommand("auto", "Mute a user synced (dc and mc, auto))",
+                                "ID: Minecraft (uuid/name) or Discord (id/tag)", this.muteHandler, this.autoMutes, Platform.DISCORD, Platform.MINECRAFT))
+                        .create(),
+
+                // ----- Unmute -----
+                new CommandBuilder("unmute", "Unmute users")
+                        .addSubCommand(new UnpunishCommand("minecraft", "Unmute a minecraft user",
+                                "Minecraft user by uuid or username", this.muteHandler, Platform.MINECRAFT))
+                        .addSubCommand(new UnpunishCommand("discord",
+                                "Unmute a discord user", "Discord user by id or tag",
+                                this.muteHandler, Platform.DISCORD))
+                        .addSubCommand(new UnpunishCommand("synced", "Unmute on all platforms (dc, mc)",
+                                "ID: Minecraft (uuid/name) or Discord (id/tag)", this.muteHandler, Platform.DISCORD, Platform.MINECRAFT))
                         .create()
         };
+
+        return JavaUtils.mergeArrays(BSCommand[]::new, commands, new BSCommand[] {new HelpCommand(commands)});
     }
 
     public static Role getMuteRole() {
