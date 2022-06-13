@@ -64,7 +64,7 @@ public class GeneralPunishmentHandler implements IPunishHandler {
     }
 
     @Override
-    public void punish(Punishment punishment, Platform platform) {
+    public void punish(Punishment punishment) {
         // Before punishing: Delete old punishments
         this.unPunish(punishment);
 

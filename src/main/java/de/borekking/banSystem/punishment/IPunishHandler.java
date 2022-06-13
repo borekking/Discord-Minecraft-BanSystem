@@ -8,7 +8,7 @@ public interface IPunishHandler {
     boolean isPunished(long userID, Platform platform);
 
     // Punish a user if user exists (overrides older punishments)
-    void punish(Punishment punishment, Platform platform);
+    void punish(Punishment punishment);
 
     // Get current punishment for given userID
     Punishment getPunishment(long userID, Platform platform);
