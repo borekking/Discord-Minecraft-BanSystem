@@ -73,6 +73,21 @@ public class UserManager {
         this.setGetUserIDFromPlatformPS();
     }
 
+    // TODO Methode for adding, deleting permissions.
+
+    public long getAndCreateIfAbsent(Platform platform, String platformId, String permission) {
+        // Get userID from uuid
+        long userID = BungeeMain.getUserID(platform, platformId);
+
+        // If user does not exist, create user w/ given permission
+        if (userID < 0) {
+            UserManager userManager = BungeeMain.getInstance().getUserManager();
+            userID = userManager.addUser(platform, platformId, permission);
+        }
+
+        return userID;
+    }
+
     // Returns (eventually new) userID.
     public long addUser(Platform platform, String platformId, String permission) {
         long userID = this.getUserID(platform, platformId);

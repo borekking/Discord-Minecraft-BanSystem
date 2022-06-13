@@ -9,12 +9,17 @@ import net.dv8tion.jda.api.entities.User;
 
 public class DiscordUtils {
 
-    public static User getUser(Long id) {
+    public static User getUserByID(Long id) {
         return BungeeMain.getInstance().getDiscordBot().getJda().getUserById(id);
     }
 
-    public static User getUser(String id) {
-        return getUser(Long.parseLong(id));
+    public static User getUserByID(String id) {
+        return getUserByID(Long.parseLong(id));
+    }
+
+    // E.g. "borekking#0187"
+    public static User getUserByTag(String tag) {
+        return BungeeMain.getInstance().getDiscordBot().getJda().getUserByTag(tag);
     }
 
     public static Member getMember(Guild guild, User user) {
