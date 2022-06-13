@@ -24,7 +24,7 @@ public enum PunishmentType {
                 // Ban user from discord guild
                 List<Long> discordIDs = user.getDiscordIDs();
                 for (Long id : discordIDs) {
-                    net.dv8tion.jda.api.entities.User discordUser = DiscordUtils.getUser(id);
+                    net.dv8tion.jda.api.entities.User discordUser = DiscordUtils.getUserByID(id);
                     if (discordUser == null) continue; // NPE!
 
                     String reason = ConfigSetting.BAN_DISCORD_MESSAGE.getValueAsString().replace("%reason%", punishment.getReason());
@@ -52,7 +52,7 @@ public enum PunishmentType {
                 // Unban user from discord guild
                 List<Long> discordIDs = user.getDiscordIDs();
                 for (Long id : discordIDs) {
-                    net.dv8tion.jda.api.entities.User discordUser = DiscordUtils.getUser(id);
+                    net.dv8tion.jda.api.entities.User discordUser = DiscordUtils.getUserByID(id);
                     if (discordUser == null) continue; // NPE!
 
                     DiscordUtils.unban(discordUser);
@@ -77,7 +77,7 @@ public enum PunishmentType {
                 // Add mute role to user and send DM
                 List<Long> discordIDs = user.getDiscordIDs();
                 for (Long id : discordIDs) {
-                    net.dv8tion.jda.api.entities.User discordUser = DiscordUtils.getUser(id);
+                    net.dv8tion.jda.api.entities.User discordUser = DiscordUtils.getUserByID(id);
                     if (discordUser == null) continue; // NPE!
 
                     DiscordUtils.addRole(discordUser, muteRole);
@@ -115,7 +115,7 @@ public enum PunishmentType {
                 // Add mute role to user and send DM
                 List<Long> discordIDs = user.getDiscordIDs();
                 for (Long id : discordIDs) {
-                    net.dv8tion.jda.api.entities.User discordUser = DiscordUtils.getUser(id);
+                    net.dv8tion.jda.api.entities.User discordUser = DiscordUtils.getUserByID(id);
                     if (discordUser == null) continue; // NPE!
 
                     DiscordUtils.addRole(discordUser, muteRole);
