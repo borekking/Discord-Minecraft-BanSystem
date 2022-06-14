@@ -3,9 +3,10 @@ package de.borekking.banSystem.util;
 import de.borekking.banSystem.BungeeMain;
 import de.borekking.banSystem.punishment.Platform;
 import de.borekking.banSystem.util.discord.DiscordUtils;
-
 import de.borekking.banSystem.util.minecraft.MinecraftUUIDUtils;
+
 import java.util.UUID;
+
 import net.dv8tion.jda.api.entities.User;
 
 public final class BSUtils {
@@ -16,27 +17,14 @@ public final class BSUtils {
     // Get discord user ID by String containing discord id or discord tag.
     public static long getDiscordID(String discordID) {
         // 1. Try with discord id
-        long id;
-        try {
-            id = Long.parseLong(discordID);
-        } catch (NumberFormatException ignored) {
-            id = -1L;
-        }
+        User discordUserA = DiscordUtils.getUserByID(discordID);
 
-        if (id > 0) {
-            User discordUser = DiscordUtils.getUserByID(id);
-
-            if (discordUser != null) {
-                return id;
-            }
-        }
+        if (discordUserA != null) return discordUserA.getIdLong();
 
         // 2. Try with discord tag
-        User discordUser = DiscordUtils.getUserByTag(discordID);
+        User discordUserB = DiscordUtils.getUserByTag(discordID);
 
-        if (discordUser != null) {
-            return discordUser.getIdLong();
-        }
+        if (discordUserB != null) return discordUserB.getIdLong();
 
         // 3. Return -1 as illegal id
         return -1L;

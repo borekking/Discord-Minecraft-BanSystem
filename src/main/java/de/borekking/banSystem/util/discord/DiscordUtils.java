@@ -14,12 +14,21 @@ public class DiscordUtils {
     }
 
     public static User getUserByID(String id) {
-        return getUserByID(Long.parseLong(id));
+        try {
+            return getUserByID(Long.parseLong(id));
+        } catch (NumberFormatException e) {
+            System.out.println("Not a long value!");
+            return null;
+        }
     }
 
     // E.g. "borekking#0187"
     public static User getUserByTag(String tag) {
-        return BungeeMain.getInstance().getDiscordBot().getJda().getUserByTag(tag);
+        try {
+            return BungeeMain.getInstance().getDiscordBot().getJda().getUserByTag(tag);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 
     public static Member getMember(Guild guild, User user) {
