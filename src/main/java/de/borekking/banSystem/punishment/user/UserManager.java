@@ -276,7 +276,7 @@ public class UserManager {
         long userID;
 
         do {
-            userID = RandomNumberCreator.getRandomLong();
+            userID = RandomNumberCreator.getRandomLong(0L);
         } while (this.userIDExists(userID));
 
         return userID;
