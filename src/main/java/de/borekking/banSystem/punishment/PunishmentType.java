@@ -82,7 +82,9 @@ public enum PunishmentType {
 
                     DiscordUtils.addRole(discordUser, muteRole);
 
-                    discordUser.openPrivateChannel().queue(channel -> channel.sendMessage(message).queue());
+                    if (!message.isEmpty()) {
+                        discordUser.openPrivateChannel().queue(channel -> channel.sendMessage(message).queue());
+                    }
                 }
                 break;
             }
@@ -119,7 +121,10 @@ public enum PunishmentType {
                     if (discordUser == null) continue; // NPE!
 
                     DiscordUtils.addRole(discordUser, muteRole);
-                    discordUser.openPrivateChannel().queue(channel -> channel.sendMessage(message).queue());
+
+                    if (!message.isEmpty()) {
+                        discordUser.openPrivateChannel().queue(channel -> channel.sendMessage(message).queue());
+                    }
                 }
                 break;
             }
