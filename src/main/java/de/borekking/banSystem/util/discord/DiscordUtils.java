@@ -17,7 +17,6 @@ public class DiscordUtils {
         try {
             return getUserByID(Long.parseLong(id));
         } catch (NumberFormatException e) {
-            System.out.println("Not a long value!");
             return null;
         }
     }
