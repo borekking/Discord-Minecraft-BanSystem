@@ -43,6 +43,13 @@ public class BungeeMain extends Plugin {
 
     /*
      * TODO
+     *  0. Commands:
+     *        -> Aliases
+     *        ->
+     *        - Durations Command
+     *        - Auto-ID Command
+     *        - Help Command
+     *        - Reload -> implement reload shit
      *  1. Broadcaster: On Mute, un-mute, ... -> PunishmentType
      *  2. Merge Command: UserManager::merge: long : userIDA, long : userIDB ->
      *     -> /merge <m/d> <userA> <m/d> <userB>
@@ -53,11 +60,7 @@ public class BungeeMain extends Plugin {
      *        - remove permissions: <user> <platform> <permissions>
      *        - Add Permissions to Commands as attribute -> check permissions (UserManager:getUser)
      *        - e.g. "ban.*", "ban.minecraft.auto"
-     *  6. Other Commands:
-     *        - Durations
-     *        - Auto-IDs
-     *        - Help
-     *        - Reload -> implement reload shit
+     *
      */
 
     /*
