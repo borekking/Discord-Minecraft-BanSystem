@@ -29,6 +29,6 @@ public class ChatListener implements Listener {
         long userID = BungeeMain.getUserID(Platform.MINECRAFT, uuidStr);
         if (userID < 0) return false;
 
-        return BungeeMain.getInstance().getBanHandler().isPunished(userID, Platform.MINECRAFT);
+        return BungeeMain.getInstance().getMuteHandler().isPunished(userID, Platform.MINECRAFT);
     }
 }
