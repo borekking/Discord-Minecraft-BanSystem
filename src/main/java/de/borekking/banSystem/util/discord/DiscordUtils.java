@@ -2,6 +2,7 @@ package de.borekking.banSystem.util.discord;
 
 import de.borekking.banSystem.BungeeMain;
 
+import java.util.stream.Collectors;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
@@ -43,18 +44,43 @@ public class DiscordUtils {
         return getRole(Long.parseLong(id));
     }
 
-    public static void ban(User user, int delDays, String reason) {
+    // Return if user was actually banned.
+    public static boolean ban(User user, int delDays, String reason) {
         Guild guild = BungeeMain.getInstance().getDiscordBot().getGuild();
-        guild.ban(user, delDays, reason).queue();
+
+        try {
+            guild.ban(user, delDays, reason).queue();
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+
+        return true;
     }
 
-    public static void ban(User user) {
-        ban(user, 7, "");
+    // Return if user was actually banned.
+    public static boolean ban(User user) {
+        return ban(user, 7, "");
     }
 
-    public static void unban(User user) {
-        Guild guild = BungeeMain.getInstance().getDiscordBot().getGuild();
+    // Return if user was banned
+    public static boolean unban(final User user) {
+        final Guild guild = BungeeMain.getInstance().getDiscordBot().getGuild();
+
+        if (!userIsBanned(user)) return false;
+
         guild.unban(user).queue();
+        return true;
+    }
+
+    public static boolean userIsBanned(final User user) {
+        final Guild guild = BungeeMain.getInstance().getDiscordBot().getGuild();
+
+        boolean[] b = new boolean[1];
+
+        guild.retrieveBanList().queue(list -> b[0] = list.stream()
+                .map(Guild.Ban::getUser).collect(Collectors.toList()).contains(user));
+
+        return b[0];
     }
 
     public static void addRole(User user, Role role) {
