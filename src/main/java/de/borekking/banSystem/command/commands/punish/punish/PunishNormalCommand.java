@@ -7,6 +7,7 @@ import de.borekking.banSystem.punishment.GeneralPunishmentHandler;
 import de.borekking.banSystem.punishment.Platform;
 import de.borekking.banSystem.punishment.Punishment;
 import de.borekking.banSystem.util.discord.MyEmbedBuilder;
+
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
