@@ -92,19 +92,41 @@ public class BSBaseCommand extends BSCommand {
             return;
         }
 
+        if (args.length < 1) {
+            // Send help message, with commands that can be used
+            BungeeMain.sendMessage(sender, "Unknown Sub-Command/Sub-Command-Group!", "Available Sub-Commands:",
+                    String.join(", ", this.subCommands.keySet()), "Available Sub-Command-Groups: ", String.join(", ", this.subCommandGroups.keySet()));
+            return;
+        }
+
         int argsRemove = 1;
         BSStandAloneCommand command = this.getSubCommand(args);
 
+        // If subCommand wasn't found, check for SubCommandGroup
         if (command == null) {
-            command = this.getSubCommandFromGroup(args);
-            argsRemove = 2;
+            BSSubCommandGroup group = this.getGroup(args[0]);
+
+            // If group exists, try to get subCommand
+            if (group != null) {
+                command = args.length < 2 ? null : group.getSubCommand(args[1]);
+
+                // If the subCommand did not exist, send help message for this.group command
+                if (command == null) {
+                    // Send help message, with commands that can be used in group
+                    BungeeMain.sendMessage(sender, "Unknown Sub-Command!", "Available Sub-Commands for \"/" + this.getName() + " " + group.getName() + "\":",
+                            group.getSubCommands().stream().map(BSCommand::getName).collect(Collectors.joining(", ")));
+                    return;
+                }
+
+                // Here the group's subCommand was found.
+                argsRemove = 2;
+            }
         }
 
         if (command == null) {
             // Send help message, with commands that can be used
             BungeeMain.sendMessage(sender, "Unknown Sub-Command/Sub-Command-Group!", "Available Sub-Commands:",
                     String.join(", ", this.subCommands.keySet()), "Available Sub-Command-Groups: ", String.join(", ", this.subCommandGroups.keySet()));
-
             return;
         }
 
@@ -157,6 +179,12 @@ public class BSBaseCommand extends BSCommand {
         if (args.length < 2) return null; // There can not be a sub command group if only one arg is provided
 
         return this.getSubCommandFromGroup(args[0], args[1]);
+    }
+
+    private BSSubCommandGroup getGroup(String group) {
+        if (group == null) return null;
+
+        return this.subCommandGroups.get(group.toLowerCase());
     }
 
     // Get direct SubCommand
