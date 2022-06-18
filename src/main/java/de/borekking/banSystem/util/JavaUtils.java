@@ -62,7 +62,7 @@ public class JavaUtils {
     }
 
     public static <K, V> Map<K, V> createMap(Object... objects) {
-        if (objects.length % 2 != 0) throw new RuntimeException("Odd size if objects");
+        if (objects.length % 2 != 0) throw new RuntimeException("Odd size of objects");
 
         Map<K, V> map = new HashMap<>();
 
