@@ -3,6 +3,8 @@ package de.borekking.banSystem;
 import de.borekking.banSystem.command.BSCommand;
 import de.borekking.banSystem.command.CommandBuilder;
 import de.borekking.banSystem.command.CommandHandler;
+import de.borekking.banSystem.command.commands.other.AutoIDCommand;
+import de.borekking.banSystem.command.commands.other.DurationsCommand;
 import de.borekking.banSystem.command.commands.punish.punish.PunishAutoCommand;
 import de.borekking.banSystem.command.commands.punish.punish.PunishNormalCommand;
 import de.borekking.banSystem.command.commands.punish.unpunish.UnpunishCommand;
@@ -44,11 +46,9 @@ public class BungeeMain extends Plugin {
     /*
      * TODO
      *  0. Commands:
-     *        -> Aliases
-     *        ->
-     *        - Durations Command
-     *        - Auto-ID Command
-     *        - Help Command
+     *        - Durations Command +
+     *        - Auto-ID Command +
+     *        - Help Command +
      *        - Reload -> implement reload shit
      *  1. Broadcaster: On Mute, un-mute, ... -> PunishmentType
      *  2. Merge Command: UserManager::merge: long : userIDA, long : userIDB ->
@@ -281,9 +281,18 @@ public class BungeeMain extends Plugin {
         return false;
     }
 
+    // Check Permission for MC users
+    public static boolean minecraftPlayerHasPermissions(CommandSender sender) {
+        return !(sender instanceof ProxiedPlayer) ||
+                BungeeMain.hasPermission(Platform.MINECRAFT, String.valueOf(((ProxiedPlayer) sender).getUniqueId()));
+    }
+
     private BSCommand[] createCommands() {
         BSCommand[] commands = new BSCommand[]{
                 // ----- Other -----
+                new DurationsCommand(),
+
+                new AutoIDCommand(),
 
                 // ----- Ban -----
                 new CommandBuilder("ban", "Ban users")

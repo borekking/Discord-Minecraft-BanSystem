@@ -87,8 +87,7 @@ public class BSBaseCommand extends BSCommand {
     @Override
     public void execute(CommandSender sender, String[] args) {
         // Check Permission for MC users
-        if (sender instanceof ProxiedPlayer && !BungeeMain.hasPermission(Platform.MINECRAFT,
-                String.valueOf(((ProxiedPlayer) sender).getUniqueId()))) {
+        if (BungeeMain.minecraftPlayerHasPermissions(sender)) {
             return;
         }
 
