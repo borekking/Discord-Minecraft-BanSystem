@@ -60,6 +60,8 @@ public class BungeeMain extends Plugin {
      *        - remove permissions: <user> <platform> <permissions>
      *        - Add Permissions to Commands as attribute -> check permissions (UserManager:getUser)
      *        - e.g. "ban.*", "ban.minecraft.auto"
+     *  6. Other:
+     *        - Message if user to ban has too high permission (-> permissions with rank?, -> dc: higher than the bot)
      *
      */
 
@@ -366,10 +368,13 @@ public class BungeeMain extends Plugin {
 
     // Utility function to send a message to a minecraft player
     public static void sendMessage(CommandSender sender, String message1, String... messages) {
+        String[] arr = JavaUtils.mergeArrays(String[]::new, new String[] {message1}, messages);
+        sendMessage(sender, arr);
+    }
+
+    public static void sendMessage(CommandSender sender, String[] messages) {
         // List w/ messages
-        List<String> messageList = new ArrayList<>();
-        messageList.add(message1);
-        messageList.addAll(JavaUtils.getAsList(messages));
+        List<String> messageList = new ArrayList<>(JavaUtils.getAsList(messages));
 
         // Create TextComponent
         TextComponent textComponent;
