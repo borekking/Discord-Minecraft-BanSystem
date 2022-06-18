@@ -3,7 +3,9 @@ package de.borekking.banSystem.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 import java.util.function.Function;
 
@@ -32,7 +34,7 @@ public class JavaUtils {
         T[] array = arrayCreator.apply(length);
 
         int i = 0;
-        for(T[] arr : arrays) {
+        for (T[] arr : arrays) {
             for (T t : arr) {
                 array[i] = t;
                 i++;
@@ -57,5 +59,20 @@ public class JavaUtils {
         }
 
         return joiner.toString();
+    }
+
+    public static <K, V> Map<K, V> createMap(Object... objects) {
+        if (objects.length % 2 != 0) throw new RuntimeException("Odd size if objects");
+
+        Map<K, V> map = new HashMap<>();
+
+        for (int i = 0; i < objects.length - 1; i += 2) {
+            K key = (K) objects[i];
+            V value = (V) objects[i+1];
+
+            map.put(key, value);
+        }
+
+        return map;
     }
 }
