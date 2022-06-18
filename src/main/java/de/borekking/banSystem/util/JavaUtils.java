@@ -2,6 +2,7 @@ package de.borekking.banSystem.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.function.Function;
@@ -13,11 +14,11 @@ public class JavaUtils {
         return new ArrayList<>(Arrays.asList(arr));
     }
 
-    public static String concat(List<? extends CharSequence> list) {
+    public static String concat(Collection<? extends CharSequence> list) {
         return getTextWithDelimiter(list, "");
     }
 
-    public static String getTextWithDelimiter(List<? extends CharSequence> list, CharSequence delimiter) {
+    public static String getTextWithDelimiter(Collection<? extends CharSequence> list, CharSequence delimiter) {
         return String.join(delimiter, list);
     }
 
