@@ -35,6 +35,10 @@ public class Punishment {
         return timestampEnd;
     }
 
+    public long getDuration() {
+        return timestampEnd - timestamp;
+    }
+
     public Platform getPlatform() {
         return platform;
     }
