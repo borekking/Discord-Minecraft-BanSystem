@@ -3,9 +3,11 @@ package de.borekking.banSystem.util.discord;
 import de.borekking.banSystem.BungeeMain;
 
 import java.util.stream.Collectors;
+
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 
 public class DiscordUtils {
@@ -91,5 +93,11 @@ public class DiscordUtils {
     public static void removeRole(User user, Role role) {
         Guild guild = BungeeMain.getInstance().getDiscordBot().getGuild();
         guild.removeRoleFromMember(user, role).queue();
+    }
+
+    public static TextChannel getTextChannel(long id) {
+        Guild guild = BungeeMain.getInstance().getGuild();
+
+        return guild.getTextChannelById(id);
     }
 }

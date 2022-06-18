@@ -1,5 +1,6 @@
 package de.borekking.banSystem;
 
+import de.borekking.banSystem.broadcast.Broadcaster;
 import de.borekking.banSystem.command.BSCommand;
 import de.borekking.banSystem.command.CommandBuilder;
 import de.borekking.banSystem.command.CommandHandler;
@@ -184,6 +185,8 @@ public class BungeeMain extends Plugin {
 
     private AutoReasonHandler autoBans, autoMutes;
 
+    private Broadcaster broadcaster;
+
     @Override
     public void onLoad() {
         instance = this;
@@ -194,6 +197,8 @@ public class BungeeMain extends Plugin {
     @Override
     public void onEnable() {
         new ConfigHandler(); // Create new ConfigHandler to create ConfigFile and Set ConfigSettings
+
+        this.broadcaster = new Broadcaster();
 
         // Create AutoBanHandler and AutoMuteHandler
         this.autoBans = new AutoReasonHandler("autopunishments", "bans");
@@ -470,5 +475,9 @@ public class BungeeMain extends Plugin {
 
     public static BungeeMain getInstance() {
         return instance;
+    }
+
+    public Broadcaster getBroadcaster() {
+        return broadcaster;
     }
 }

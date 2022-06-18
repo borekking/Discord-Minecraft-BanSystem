@@ -26,15 +26,17 @@ public enum ConfigSetting {
 
     // Ban (Messages)
     BAN_DISCORD_MESSAGE("ban.discord.message", "Banned for reason: %reason%"),
-
     BAN_MINECRAFT_MESSAGE("ban.minecraft.message", "You were banned!\n %reason%"),
+
+    BAN_BROADCAST_CHANNEL("ban.broadcastChannel", -1L),
 
     // Mute (Messages)
     MUTE_DISCORD_MUTE("mute.discord.mute.message", ""),
     MUTE_DISCORD_UNMUTE("mute.discord.unmute.message", ""),
 
     MUTE_MINECRAFT_MUTE("mute.minecraft.mute.message", ""),
-    MUTE_MINECRAFT_UNMUTE("mute.minecraft.unmute.message", "");
+    MUTE_MINECRAFT_UNMUTE("mute.minecraft.unmute.message", ""),
+    MUTE_BROADCAST_CHANNEL("mute.broadcastChannel", -1L);
 
     private final String path; // Key
     private Object value; // Value
