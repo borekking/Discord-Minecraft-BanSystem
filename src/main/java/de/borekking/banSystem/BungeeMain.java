@@ -23,8 +23,8 @@ import de.borekking.banSystem.util.JarUtils;
 import de.borekking.banSystem.util.JavaUtils;
 import de.borekking.banSystem.util.discord.DiscordUtils;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.UUID;
 
 import net.dv8tion.jda.api.Permission;
@@ -259,7 +259,7 @@ public class BungeeMain extends Plugin {
 //
 //        return user.hasPermissions(permission);
 
-        // Return true if user
+        // Return true if user is admin
         switch (platform) {
             case MINECRAFT: {
                 UUID uuid = Platform.getMinecraftUUID(platformID);
@@ -373,8 +373,12 @@ public class BungeeMain extends Plugin {
     }
 
     public static void sendMessage(CommandSender sender, String[] messages) {
+        String line = "-------------------------";
+
         // List w/ messages
-        List<String> messageList = new ArrayList<>(JavaUtils.getAsList(messages));
+        Deque<String> messageList = new LinkedList<>(JavaUtils.getAsList(messages));
+        messageList.addLast(line);
+        messageList.addFirst(line);
 
         // Create TextComponent
         TextComponent textComponent;
