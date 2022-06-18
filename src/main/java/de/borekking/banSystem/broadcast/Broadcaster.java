@@ -12,13 +12,17 @@ public class Broadcaster {
     public Broadcaster() {
     }
 
-    public void sendMessage(MessageEmbed embed, long channelID) {
+    public void sendMessage( long channelID, MessageEmbed embed) {
         TextChannel textChannel = this.getTextChannel(channelID);
+        if (textChannel == null) return;
+
         textChannel.sendMessageEmbeds(embed).queue();
     }
 
-    public void sendMessage(String msg, long channelID) {
+    public void sendMessage(long channelID, String msg) {
         TextChannel textChannel = this.getTextChannel(channelID);
+        if (textChannel == null) return;
+
         textChannel.sendMessage(msg).queue();
     }
 
