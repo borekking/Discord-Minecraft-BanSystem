@@ -87,7 +87,7 @@ public class BSBaseCommand extends BSCommand {
     @Override
     public void execute(CommandSender sender, String[] args) {
         // Check Permission for MC users
-        if (BungeeMain.minecraftPlayerHasPermissions(sender)) {
+        if (!BungeeMain.minecraftPlayerHasPermissions(sender)) {
             return;
         }
 
