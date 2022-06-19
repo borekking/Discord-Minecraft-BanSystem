@@ -65,8 +65,12 @@ public class GeneralPunishmentHandler implements IPunishHandler {
 
     @Override
     public void punish(Punishment punishment) {
+        this.punish(punishment, true);
+    }
+
+    private void punish(Punishment punishment, boolean broadcast) {
         // Before punishing: Delete old punishments
-        this.unPunish(punishment);
+        this.unPunish(punishment, false);
 
         try {
             this.punishStatement.setLong(1, punishment.getUserID());
@@ -80,7 +84,10 @@ public class GeneralPunishmentHandler implements IPunishHandler {
             return;
         }
 
-        this.punishmentType.handlePunishment(punishment);
+        if (broadcast) {
+            this.punishmentType.punish(punishment);
+            this.punishmentType.broadcastPunishment(punishment);
+        }
 
         this.database.update(this.punishStatement);
     }
@@ -101,6 +108,10 @@ public class GeneralPunishmentHandler implements IPunishHandler {
 
     @Override
     public void unPunish(Punishment punishment) {
+        this.unPunish(punishment, true);
+    }
+
+    private void unPunish(Punishment punishment, boolean broadcast) {
         try {
             this.deletePunishmentStatement.setLong(1, punishment.getUserID());
             this.deletePunishmentStatement.setString(2, punishment.getPlatform().getIdentifier());
@@ -109,7 +120,10 @@ public class GeneralPunishmentHandler implements IPunishHandler {
             return;
         }
 
-        this.punishmentType.handleUnPunish(punishment);
+        if (broadcast) {
+            this.punishmentType.unPunish(punishment);
+            this.punishmentType.broadcastUnPunishment(punishment);
+        }
 
         this.database.update(this.deletePunishmentStatement);
     }
