@@ -29,7 +29,7 @@ public class DurationsCommand extends BSStandAloneCommand {
         event.replyEmbeds(new MyEmbedBuilder()
                 .color(Color.GRAY)
                 .title("Available Durations")
-                .field(fields, true)
+                .field(fields, false)
                 .build()).queue();
     }
 
@@ -40,7 +40,7 @@ public class DurationsCommand extends BSStandAloneCommand {
             return;
         }
 
-        BungeeMain.sendMessage(sender, "Available Durations", this.createCommandFieldsMC());
+        BungeeMain.sendMessage(sender, new String[]{"Available Durations:", ""}, this.createCommandFieldsMC());
     }
 
     private String[] createCommandFieldsMC() {
@@ -49,7 +49,7 @@ public class DurationsCommand extends BSStandAloneCommand {
 
         int i = 0;
         for (TimeEnum duration : durations) {
-            arr[i++] = duration.getName() + ": " + duration.getShortName();
+            arr[i++] = "   " + duration.getName() + ": " + duration.getShortName();
         }
 
         return arr;

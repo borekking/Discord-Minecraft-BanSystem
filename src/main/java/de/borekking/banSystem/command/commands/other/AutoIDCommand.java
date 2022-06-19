@@ -51,13 +51,13 @@ public class AutoIDCommand extends BSStandAloneCommand {
                 .field(autoReasonHandler.getIds().stream().collect(Collectors.toMap(
                         id -> {
                             AutoReason reason = autoReasonHandler.getReasonByID(id);
-                            return reason.getName();
+                            return reason.getName() + " (" + id + ")";
                         },
                         id -> {
                             AutoReason reason = autoReasonHandler.getReasonByID(id);
-                            return Duration.getMessage(reason.getDuration()) + " (" + id + ")";
+                            return Duration.getMessage(reason.getDuration());
                         })
-                ), true);
+                ), false);
 
         event.replyEmbeds(builder.build()).queue();
     }
@@ -78,9 +78,9 @@ public class AutoIDCommand extends BSStandAloneCommand {
 
         AutoReasonHandler autoReasonHandler;
 
-        if (PunishmentType.MUTE.name().equals(type)) {
+        if (PunishmentType.MUTE.name().equalsIgnoreCase(type)) {
             autoReasonHandler = BungeeMain.getInstance().getAutoMutes();
-        } else if (PunishmentType.BAN.name().equals(type)) {
+        } else if (PunishmentType.BAN.name().equalsIgnoreCase(type)) {
             autoReasonHandler = BungeeMain.getInstance().getAutoBans();
         } else {
             BungeeMain.sendMessage(sender, "Could not find type \"" + type + "\"!");
@@ -92,11 +92,11 @@ public class AutoIDCommand extends BSStandAloneCommand {
         int i = 0;
         for (int id : ids) {
             AutoReason reason = autoReasonHandler.getReasonByID(id);
-            arr[i++] = reason.getName();
-            arr[i++] = Duration.getMessage(reason.getDuration()) + " (" + id + ")";
+            arr[i++] = reason.getName() + " (" + id + ")";
+            arr[i++] = "   " + Duration.getMessage(reason.getDuration());
         }
 
-        BungeeMain.sendMessage(sender, "Auto IDs for " + type + ":", arr);
+        BungeeMain.sendMessage(sender, new String[]{"Auto IDs for " + type + ":", ""}, arr);
 
     }
 }

@@ -41,8 +41,8 @@ public class HelpCommand extends BSStandAloneCommand {
             return;
         }
 
-        BungeeMain.sendMessage(sender,"Description for all commands you have permissions for."); // TODO Permission stuff
-        BungeeMain.sendMessage(sender, this.createCommandFieldsMC()); // TODO
+        // TODO Permission stuff
+        BungeeMain.sendMessage(sender, new String[] {"Description for all commands you have permissions for:", ""}, this.createCommandFieldsMC()); // TODO
     }
 
     private Map<String, String> createCommandFields() {
