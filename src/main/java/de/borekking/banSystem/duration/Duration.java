@@ -82,7 +82,7 @@ public final class Duration {
             }
 
             if (amount > 0) { // time is used more than ones
-                joiner.add(time + time.getName() + "(s)");
+                joiner.add(amount + " " + time.getName() + "(s)");
             }
         }
 
