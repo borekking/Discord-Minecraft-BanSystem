@@ -382,15 +382,14 @@ public class BungeeMain extends Plugin {
 
     // Utility function to send a message to a minecraft player
     public static void sendMessage(CommandSender sender, String message1, String... messages) {
-        String[] arr = JavaUtils.mergeArrays(String[]::new, new String[] {message1}, messages);
-        sendMessage(sender, arr);
+        sendMessage(sender, new String[] {message1}, messages);
     }
 
-    public static void sendMessage(CommandSender sender, String[] messages) {
+    public static void sendMessage(CommandSender sender, String[]... messages) {
         String line = "-------------------------";
 
         // List w/ messages
-        Deque<String> messageList = new LinkedList<>(JavaUtils.getAsList(messages));
+        Deque<String> messageList = new LinkedList<>(JavaUtils.getAsList(JavaUtils.mergeArrays(messages)));
         messageList.addLast(line);
         messageList.addFirst(line);
 
