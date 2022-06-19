@@ -345,12 +345,12 @@ public class BungeeMain extends Plugin {
 
                         .addSubCommand("discord", new PunishNormalCommand("normal", "Mute a discord user (normal)",
                                 "Discord user by id or tag", this.muteHandler, Platform.DISCORD))
-                        .addSubCommand("discord", new PunishAutoCommand("auto", "Mute a discord user (auto))",
+                        .addSubCommand("discord", new PunishAutoCommand("auto", "Mute a discord user (auto)",
                                 "Discord user by id or tag", this.muteHandler, this.autoMutes, Platform.DISCORD))
 
                         .addSubCommand("synced", new PunishNormalCommand("normal", "Mute a user synced (dc and mc, normal)",
                                 "Discord user by id or tag", this.muteHandler, Platform.DISCORD, Platform.MINECRAFT))
-                        .addSubCommand("synced", new PunishAutoCommand("auto", "Mute a user synced (dc and mc, auto))",
+                        .addSubCommand("synced", new PunishAutoCommand("auto", "Mute a user synced (dc and mc, auto)",
                                 "ID: Minecraft (uuid/name) or Discord (id/tag)", this.muteHandler, this.autoMutes, Platform.DISCORD, Platform.MINECRAFT))
                         .create(),
 
