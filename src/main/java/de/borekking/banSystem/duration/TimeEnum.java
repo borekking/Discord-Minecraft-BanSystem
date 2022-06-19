@@ -31,7 +31,7 @@ public enum TimeEnum {
         this.millis = millis;
     }
 
-    public static List<TimeEnum> getIncreasingValues() {
+    public static List<TimeEnum> getDecreasingValues() {
         if (increasingValues == null) {
             increasingValues = Arrays.stream(values())
                     .sorted(Comparator.reverseOrder())
