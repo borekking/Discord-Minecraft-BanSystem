@@ -70,7 +70,7 @@ public final class Duration {
         long rest = millis; // Millis left
         StringJoiner joiner = new StringJoiner(" ");
 
-        for (TimeEnum time : TimeEnum.getIncreasingValues()) {
+        for (TimeEnum time : TimeEnum.getDecreasingValues()) {
             long currentMillis = time.getMillis();
             if (currentMillis < 0) continue; // Skip p
 

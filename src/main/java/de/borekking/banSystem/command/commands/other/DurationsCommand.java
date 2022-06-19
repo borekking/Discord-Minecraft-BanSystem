@@ -23,7 +23,7 @@ public class DurationsCommand extends BSStandAloneCommand {
 
     @Override
     public void perform(SlashCommandInteractionEvent event) {
-        Map<String, String> fields = TimeEnum.getIncreasingValues().stream()
+        Map<String, String> fields = TimeEnum.getDecreasingValues().stream()
                 .collect(Collectors.toMap(TimeEnum::getName, TimeEnum::getShortName));
 
         event.replyEmbeds(new MyEmbedBuilder()
@@ -44,7 +44,7 @@ public class DurationsCommand extends BSStandAloneCommand {
     }
 
     private String[] createCommandFieldsMC() {
-        List<TimeEnum> durations = TimeEnum.getIncreasingValues();
+        List<TimeEnum> durations = TimeEnum.getDecreasingValues();
         String[] arr = new String[durations.size()];
 
         int i = 0;
