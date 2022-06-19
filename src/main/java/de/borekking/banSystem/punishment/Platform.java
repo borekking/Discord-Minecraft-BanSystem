@@ -43,6 +43,15 @@ public enum Platform {
         this.getUserIDAndCreateIfAbsentFunction = getUserIDAndCreateIfAbsentFunction;
     }
 
+    public static Platform getPlatform(String str) {
+        for (Platform platform : Platform.values()) {
+            if (platform.name().equalsIgnoreCase(str)) {
+                return platform;
+            }
+        }
+        return null;
+    }
+
     public static Platform getByIdentifier(String identifier) {
         return Arrays.stream(Platform.values()).filter(p -> p.getIdentifier().equals(identifier)).findFirst().orElse(null);
     }
