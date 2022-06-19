@@ -75,7 +75,7 @@ public final class Duration {
             if (currentMillis < 0) continue; // Skip p
 
             int amount = 0; // Amount of time used
-            while (rest > currentMillis) {
+            while (rest >= currentMillis) {
                 // Subtract current millis from rest and increment amount
                 rest = rest - currentMillis;
                 amount++;
