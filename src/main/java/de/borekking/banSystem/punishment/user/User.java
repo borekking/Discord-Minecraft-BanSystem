@@ -4,6 +4,7 @@ import de.borekking.banSystem.punishment.Platform;
 import de.borekking.banSystem.util.discord.DiscordUtils;
 import de.borekking.banSystem.util.minecraft.MinecraftUUIDUtils;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public class User {
@@ -36,6 +37,20 @@ public class User {
         }
 
         return "";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        User that = (User) o;
+        return this.id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     public long getId() {
