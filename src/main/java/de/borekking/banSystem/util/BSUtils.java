@@ -79,4 +79,8 @@ public final class BSUtils {
         String uuidStr = uuid.toString();
         return BungeeMain.getInstance().getUserManager().getAndCreateIfAbsent(Platform.MINECRAFT, uuidStr, permissionsOnAbsent);
     }
+
+    public static String getPlatformID(Platform platform, String platformID) {
+        return platform.getPlatformID(platformID);
+    }
 }
