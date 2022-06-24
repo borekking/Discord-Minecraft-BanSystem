@@ -143,7 +143,10 @@ public class GeneralPunishmentHandler implements IPunishHandler {
     }
 
     public boolean isOver(Punishment punishment) {
-        return System.currentTimeMillis() >= punishment.getTimestampEnd();
+        long timestampEnd = punishment.getTimestampEnd();
+        if (timestampEnd < 0L) return false;
+
+        return System.currentTimeMillis() >= timestampEnd;
     }
 
     private void createDBTable() {

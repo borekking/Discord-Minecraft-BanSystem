@@ -104,7 +104,8 @@ public class PunishNormalCommand extends BSStandAloneCommand {
     }
 
     private List<Punishment> perform(long userID, long operatorID, long duration, String reason) {
-        long timestampStart = System.currentTimeMillis(), timestampEnd = timestampStart + duration;
+        long timestampStart = System.currentTimeMillis();
+        long timestampEnd = duration < 0L ? -1L : timestampStart + duration;
         reason = reason == null ? "" : reason;
 
         List<Punishment> punishments = new ArrayList<>();

@@ -22,7 +22,7 @@ public class AutoReason {
 
     public Punishment createPunishment(long userID, long operatorID, Platform platform) {
         long timestampStart = System.currentTimeMillis();
-        long timestampEnd = timestampStart + this.duration;
+        long timestampEnd = this.duration < 0L ? -1L : timestampStart + this.duration;
 
         return new Punishment(userID, operatorID, timestampStart, timestampEnd, platform, this.name);
     }
