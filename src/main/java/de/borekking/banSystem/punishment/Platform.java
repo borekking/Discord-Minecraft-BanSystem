@@ -13,15 +13,19 @@ import java.util.stream.Collectors;
 public enum Platform {
 
     DISCORD("discordUser", "discordID", "d",
+            id -> { long discordID; return (discordID = BSUtils.getDiscordID(id)) >= 0 ? String.valueOf(discordID) : null; },
             id -> BSUtils.getDiscordID(id) >= 0,
             BSUtils::getUserIDByDiscord,
             BSUtils::getUserIDByDiscordIDAndCreateIfAbsent),
     MINECRAFT("minecraftUser", "minecraftID", "m",
+            id -> { UUID uuid; return (uuid = BSUtils.getUUID(id)) != null ? uuid.toString() : null; },
             id -> BSUtils.getUUID(id) != null,
             BSUtils::getUserIDByMinecraft,
             BSUtils::getUserIDByMinecraftIDAndCreateIfAbsent);
 
     private final String databaseTableName, columnName, identifier;
+
+    private final Function<String, String> platformIDFunction;
 
     private final Predicate<String> platformIDIsValid;
 
@@ -30,6 +34,7 @@ public enum Platform {
     private final BiFunction<String, String, Long> getUserIDAndCreateIfAbsentFunction;
 
     Platform(String databaseTableName, String columnName, String identifier,
+             Function<String, String> platformIDFunction,
              Predicate<String> platformIDIsValid,
              Function<String, Long> getUserIDFunction,
              BiFunction<String, String, Long> getUserIDAndCreateIfAbsentFunction) {
@@ -38,6 +43,7 @@ public enum Platform {
         this.columnName = columnName;
         this.identifier = identifier;
 
+        this.platformIDFunction = platformIDFunction;
         this.platformIDIsValid = platformIDIsValid;
         this.getUserIDFunction = getUserIDFunction;
         this.getUserIDAndCreateIfAbsentFunction = getUserIDAndCreateIfAbsentFunction;
@@ -84,6 +90,11 @@ public enum Platform {
 
     public long getUserID(String platformID) {
         return this.getUserIDFunction.apply(platformID);
+    }
+
+    // Returns null if doesn't exist
+    public String getPlatformID(String platformID) {
+        return this.platformIDFunction.apply(platformID);
     }
 
     public long getUserIDAncCreateIfAbsent(String platformID, String permissionOnAbsent) {
