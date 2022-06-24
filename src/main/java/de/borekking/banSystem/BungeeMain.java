@@ -10,6 +10,8 @@ import de.borekking.banSystem.command.commands.punish.punish.PunishAutoCommand;
 import de.borekking.banSystem.command.commands.punish.punish.PunishNormalCommand;
 import de.borekking.banSystem.command.commands.punish.unpunish.UnpunishCommand;
 import de.borekking.banSystem.command.commands.other.HelpCommand;
+import de.borekking.banSystem.command.commands.user.UserAddCommand;
+import de.borekking.banSystem.command.commands.user.UserMergeCommand;
 import de.borekking.banSystem.config.ConfigHandler;
 import de.borekking.banSystem.config.ConfigSetting;
 import de.borekking.banSystem.config.autoReason.AutoReasonHandler;
@@ -298,6 +300,14 @@ public class BungeeMain extends Plugin {
                 new DurationsCommand(),
 
                 new AutoIDCommand(),
+
+                new CommandBuilder("user", "Edit users")
+                        // user add
+                        .addSubCommand(new UserAddCommand())
+                        // user merge
+                        .addSubCommand(new UserMergeCommand())
+                        .create(),
+
 
                 // ----- Ban -----
                 new CommandBuilder("ban", "Ban users")
