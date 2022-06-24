@@ -86,7 +86,8 @@ public enum PunishmentType {
                                 "Name", user.getName(),
                                 "Platform", punishment.getPlatform().name(),
                                 "Duration", Duration.getMessage(punishment.getDuration()),
-                                "Reason", punishment.getReason()), false)
+                                "Reason", punishment.getReason(),
+                                "Operator", getOperatorName(punishment.getOperatorID())), false)
                         .build());
     }, punishment -> {
         // BR Unban
@@ -100,6 +101,7 @@ public enum PunishmentType {
                         .description("Unbanned user " + user.getName())
                         .field("Name", user.getName(), false)
                         .field("Platform", punishment.getPlatform().name(), false)
+                        .field("Operator", getOperatorName(punishment.getOperatorID()), false)
                         .build());
     }),
     MUTE(punishment -> {
@@ -197,7 +199,8 @@ public enum PunishmentType {
                                 "Name", user.getName(),
                                 "Platform", punishment.getPlatform().name(),
                                 "Duration", Duration.getMessage(punishment.getDuration()),
-                                "Reason", punishment.getReason()), false)
+                                "Reason", punishment.getReason(),
+                                "Operator", getOperatorName(punishment.getOperatorID())), false)
                         .build());
     }, punishment -> {
         // BR Unmute
@@ -211,8 +214,18 @@ public enum PunishmentType {
                         .description("Unmuted user " + user.getName())
                         .field("Name", user.getName(), false)
                         .field("Platform", punishment.getPlatform().name(), false)
+                        .field("Operator", getOperatorName(punishment.getOperatorID()), false)
                         .build());
     });
+
+    private static String getOperatorName(long operatorID) {
+        if (operatorID < 0L) return "System";
+
+        User user = BungeeMain.getInstance().getUserManager().getUser(operatorID);
+        if (user == null) return "System";
+
+        return user.getName();
+    }
 
     private final Consumer<Punishment> punish, unPunish, broadcastPunishment, broadcastUnPunishment;
 
