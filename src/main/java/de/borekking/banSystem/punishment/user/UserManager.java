@@ -3,6 +3,7 @@ package de.borekking.banSystem.punishment.user;
 import de.borekking.banSystem.BungeeMain;
 import de.borekking.banSystem.punishment.Platform;
 import de.borekking.banSystem.sql.SQLClient;
+import de.borekking.banSystem.util.BSUtils;
 import de.borekking.banSystem.util.RandomNumberCreator;
 import de.borekking.banSystem.util.functional.SQLExceptionConsumer;
 import de.borekking.banSystem.util.functional.SQLExceptionRunnable;
@@ -76,13 +77,16 @@ public class UserManager {
     // TODO Methode for adding, deleting permissions.
 
     public long getAndCreateIfAbsent(Platform platform, String platformId, String permission) {
+        String validPlatformID = BSUtils.getPlatformID(platform, platformId);
+        if (validPlatformID == null) return -1L;
+
         // Get userID from uuid
-        long userID = BungeeMain.getUserID(platform, platformId);
+        long userID = BungeeMain.getUserID(platform, validPlatformID);
 
         // If user does not exist, create user w/ given permission
         if (userID < 0) {
             UserManager userManager = BungeeMain.getInstance().getUserManager();
-            userID = userManager.addUser(platform, platformId, permission);
+            userID = userManager.addUser(platform, validPlatformID, permission);
         }
 
         return userID;
@@ -90,7 +94,10 @@ public class UserManager {
 
     // Returns (eventually new) userID.
     public long addUser(Platform platform, String platformId, String permission) {
-        long userID = this.getUserID(platform, platformId);
+        String validPlatformID = BSUtils.getPlatformID(platform, platformId);
+        if (validPlatformID == null) return -1L;
+
+        long userID = this.getUserID(platform, validPlatformID);
 
         // Check platform details do already exist
         if (userID >= 0) return userID;
@@ -109,7 +116,7 @@ public class UserManager {
 
         if (!this.setPSValuesWrapper(addToPlatform, statement -> {
             addToPlatform.setLong(1, finalUserID);
-            addToPlatform.setString(2, platformId);
+            addToPlatform.setString(2, validPlatformID);
         })) {
             return -1L;
         }
@@ -121,9 +128,12 @@ public class UserManager {
     }
 
     public long getUserID(Platform platform, String platformId) {
+        String validPlatformID = BSUtils.getPlatformID(platform, platformId);
+        if (validPlatformID == null) return -1L;
+
         PreparedStatement statement = this.getUserIDFromPlatform.get(platform);
 
-        if (!this.setPSValuesWrapper(statement, statement1 -> statement1.setString(1, platformId))) {
+        if (!this.setPSValuesWrapper(statement, statement1 -> statement1.setString(1, validPlatformID))) {
             return -1L;
         }
 
