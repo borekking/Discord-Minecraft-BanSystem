@@ -23,6 +23,11 @@ public class DurationsCommand extends BSStandAloneCommand {
 
     @Override
     public void perform(SlashCommandInteractionEvent event) {
+        if (!BungeeMain.discordUserHasPermissions(event.getUser(), this.getPermission())) {
+            BungeeMain.sendNoPermissionReply(event);
+            return;
+        }
+
         Map<String, String> fields = TimeEnum.getDecreasingValues().stream()
                 .collect(Collectors.toMap(TimeEnum::getName, TimeEnum::getShortName));
 
@@ -36,7 +41,7 @@ public class DurationsCommand extends BSStandAloneCommand {
     @Override
     public void execute(CommandSender sender, String[] args) {
         // Check Permission for MC users
-        if (!BungeeMain.minecraftPlayerHasPermissions(sender)) {
+        if (!BungeeMain.minecraftPlayerHasPermissions(sender, this.getPermission())) {
             return;
         }
 

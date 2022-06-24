@@ -3,7 +3,7 @@ package de.borekking.banSystem.punishment;
 import de.borekking.banSystem.BungeeMain;
 import de.borekking.banSystem.config.ConfigSetting;
 import de.borekking.banSystem.duration.Duration;
-import de.borekking.banSystem.punishment.user.User;
+import de.borekking.banSystem.user.User;
 import de.borekking.banSystem.util.JavaUtils;
 import de.borekking.banSystem.util.discord.DiscordUtils;
 import de.borekking.banSystem.util.discord.MyEmbedBuilder;

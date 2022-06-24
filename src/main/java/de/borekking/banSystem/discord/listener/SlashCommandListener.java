@@ -2,10 +2,6 @@ package de.borekking.banSystem.discord.listener;
 
 import de.borekking.banSystem.BungeeMain;
 import de.borekking.banSystem.command.BSCommand;
-import de.borekking.banSystem.punishment.Platform;
-import de.borekking.banSystem.util.discord.MyEmbedBuilder;
-
-import java.awt.Color;
 
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -18,18 +14,9 @@ public class SlashCommandListener extends ListenerAdapter {
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         String name = event.getName();
 
-        BSCommand command = BungeeMain.getInstance().getCommandHandler().getCommand(name); // Get Command from CommandHandler from BungeeMain
-
-        //  TODO Permissions System
-        if (event.getMember() == null || !BungeeMain.hasPermission(Platform.DISCORD, event.getMember().getId())) {
-            this.sendNoPermissions(event);
-            return;
-        }
+        // Get Command from CommandHandler from BungeeMain
+        BSCommand command = BungeeMain.getInstance().getCommandHandler().getCommand(name);
 
         command.perform(event);
-    }
-
-    private void sendNoPermissions(SlashCommandInteractionEvent event) {
-        event.replyEmbeds(new MyEmbedBuilder().color(Color.RED).title("ERROR").description("You don't have the required permissions to do that!").build()).complete();
     }
 }

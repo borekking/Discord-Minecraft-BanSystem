@@ -28,6 +28,11 @@ public class HelpCommand extends BSStandAloneCommand {
 
     @Override
     public void perform(SlashCommandInteractionEvent event) {
+        if (!BungeeMain.discordUserHasPermissions(event.getUser(), this.getPermission())) {
+            BungeeMain.sendNoPermissionReply(event);
+            return;
+        }
+
         event.replyEmbeds(new MyEmbedBuilder().title("Help").color(Color.GRAY)
                 .description("Description for all commands you have permissions for.") // TODO Permission stuff
                 .field(this.createCommandFields(), false)
@@ -37,7 +42,7 @@ public class HelpCommand extends BSStandAloneCommand {
     @Override
     public void execute(CommandSender sender, String[] args) {
         // Check Permission for MC users
-        if (!BungeeMain.minecraftPlayerHasPermissions(sender)) {
+        if (!BungeeMain.minecraftPlayerHasPermissions(sender, this.getPermission())) {
             return;
         }
 

@@ -2,7 +2,6 @@ package de.borekking.banSystem.command;
 
 import de.borekking.banSystem.BungeeMain;
 
-import de.borekking.banSystem.punishment.Platform;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -86,11 +85,6 @@ public class BSBaseCommand extends BSCommand {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        // Check Permission for MC users
-        if (!BungeeMain.minecraftPlayerHasPermissions(sender)) {
-            return;
-        }
-
         if (args.length < 1) {
             // Send help message, with commands that can be used
             BungeeMain.sendMessage(sender, "Unknown Sub-Command/Sub-Command-Group!", "Available Sub-Commands:",

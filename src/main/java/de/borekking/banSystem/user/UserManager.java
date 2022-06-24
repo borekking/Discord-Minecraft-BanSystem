@@ -1,6 +1,7 @@
-package de.borekking.banSystem.punishment.user;
+package de.borekking.banSystem.user;
 
 import de.borekking.banSystem.BungeeMain;
+import de.borekking.banSystem.permission.PermissionUtil;
 import de.borekking.banSystem.punishment.Platform;
 import de.borekking.banSystem.sql.SQLClient;
 import de.borekking.banSystem.util.BSUtils;
@@ -74,7 +75,30 @@ public class UserManager {
         this.setGetUserIDFromPlatformPS();
     }
 
-    // TODO Methode for adding, deleting permissions.
+    // Return all permissions
+    public String addPermissions(long userID, String newPermissions) {
+        User user = this.getUser(userID);
+        if (user == null) return null;
+
+        String oldPermissions = user.getPermissions();
+        String permissions = PermissionUtil.mergePermissions(oldPermissions, newPermissions);
+
+        this.setUserPermissions(userID, permissions);
+
+        return permissions;
+    }
+
+    public String removePermissions(long userID, String permissions) {
+        User user = this.getUser(userID);
+        if (user == null) return null;
+
+        String oldPermissions = user.getPermissions();
+        String newPermissions = PermissionUtil.removePermissions(oldPermissions, permissions);
+
+        this.setUserPermissions(userID, newPermissions);
+
+        return newPermissions;
+    }
 
     public long getAndCreateIfAbsent(Platform platform, String platformId, String permission) {
         String validPlatformID = BSUtils.getPlatformID(platform, platformId);
@@ -168,15 +192,10 @@ public class UserManager {
         User userB = this.getUser(userIDB);
 
         // Merge permissions
-        String newPermissions = userA.getPermissions(); // TODO!
+        String newPermissions = PermissionUtil.mergePermissions(userA.getPermissions(), userB.getPermissions());
 
         // Set new permissions for userA
-        if (!this.setPSValuesWrapper(this.updateUserPermissions, statement -> {
-            statement.setString(1, newPermissions);
-            statement.setLong(2, userIDA);
-        })) { return; }
-
-        if (!this.safeRunSQL(this.updateUserPermissions::execute)) { return; }
+        this.setUserPermissions(userIDA, newPermissions);
 
         // Delete userB in User-Table
         if (!this.setPSValuesWrapper(this.removeFromUser, statement -> statement.setLong(1, userIDB))) {
@@ -190,6 +209,18 @@ public class UserManager {
             String qry = "UPDATE " + platform.getDatabaseTableName() + " SET " + this.userIDName + " = " + userIDA + " WHERE " + this.userIDName + " = " + userIDB + ";";
             this.database.update(qry);
         }
+    }
+
+    // TODO
+    public void unmerge(Platform platform, String platformID) {
+        // 0. Get old user for permissions
+
+        // 1. Delete platformID (In platform's table)
+
+        // 2. Create new user
+        // this.addUser();
+
+        // Check if old User has to be removed (?)
     }
 
     public User getUser(long userID) {
@@ -225,6 +256,16 @@ public class UserManager {
         }
 
         return this.database.preparedStatementHasResult(this.getAllFromUser);
+    }
+
+    private void setUserPermissions(long userID, String permissions) {
+        // Set new permissions for userA
+        if (!this.setPSValuesWrapper(this.updateUserPermissions, statement -> {
+            statement.setString(1, permissions);
+            statement.setLong(2, userID);
+        })) { return; }
+
+        this.safeRunSQL(this.updateUserPermissions::execute);
     }
 
     private List<String> getPlatformIDs(long userID, Platform platform) {

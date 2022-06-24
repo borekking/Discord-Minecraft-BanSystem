@@ -1,4 +1,4 @@
-package de.borekking.banSystem.punishment.user;
+package de.borekking.banSystem.user;
 
 import de.borekking.banSystem.punishment.Platform;
 import de.borekking.banSystem.util.discord.DiscordUtils;
@@ -43,7 +43,6 @@ public class User {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         User that = (User) o;
         return this.id == that.id;
     }

@@ -42,6 +42,11 @@ public class PunishAutoCommand extends BSStandAloneCommand {
 
     @Override
     public void perform(SlashCommandInteractionEvent event) {
+        if (!BungeeMain.discordUserHasPermissions(event.getUser(), this.getPermission())) {
+            BungeeMain.sendNoPermissionReply(event);
+            return;
+        }
+
         String user = event.getOption("user").getAsString();
         String autoID = event.getOption("auto-id").getAsString();
 
@@ -62,6 +67,11 @@ public class PunishAutoCommand extends BSStandAloneCommand {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
+        // Check Permission for MC users
+        if (!BungeeMain.minecraftPlayerHasPermissions(sender, this.getPermission())) {
+            return;
+        }
+
         if (args.length < 2) {
             BungeeMain.sendMessage(sender, ChatColor.RED + "Too less arguments!", this.getUsage());
             return;

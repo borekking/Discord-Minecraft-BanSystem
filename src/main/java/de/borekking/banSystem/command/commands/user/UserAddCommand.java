@@ -3,7 +3,7 @@ package de.borekking.banSystem.command.commands.user;
 import de.borekking.banSystem.BungeeMain;
 import de.borekking.banSystem.command.BSStandAloneCommand;
 import de.borekking.banSystem.punishment.Platform;
-import de.borekking.banSystem.punishment.user.User;
+import de.borekking.banSystem.user.User;
 import de.borekking.banSystem.util.discord.MyEmbedBuilder;
 
 import java.awt.Color;
@@ -20,7 +20,7 @@ public class UserAddCommand extends BSStandAloneCommand {
     // /user add <platform> <platformID>
 
     public UserAddCommand() {
-        super("add", "Add an user",
+        super("add", "Add an user", "user.add",
                 new OptionData(OptionType.STRING, "platform", "Platform (discord/minecraft)")
                         .setRequired(true)
                         .addChoices(new Command.Choice("Discord", Platform.DISCORD.name()), new Command.Choice("Minecraft", Platform.MINECRAFT.name())),
@@ -30,6 +30,11 @@ public class UserAddCommand extends BSStandAloneCommand {
 
     @Override
     public void perform(SlashCommandInteractionEvent event) {
+        if (!BungeeMain.discordUserHasPermissions(event.getUser(), this.getPermission())) {
+            BungeeMain.sendNoPermissionReply(event);
+            return;
+        }
+
         String platformStr = event.getOption("platform").getAsString();
         String platformIDStr = event.getOption("platform-id").getAsString();
 
@@ -79,7 +84,7 @@ public class UserAddCommand extends BSStandAloneCommand {
     @Override
     public void execute(CommandSender sender, String[] args) {
         // Check Permission for MC users
-        if (!BungeeMain.minecraftPlayerHasPermissions(sender)) {
+        if (!BungeeMain.minecraftPlayerHasPermissions(sender, this.getPermission())) {
             return;
         }
 

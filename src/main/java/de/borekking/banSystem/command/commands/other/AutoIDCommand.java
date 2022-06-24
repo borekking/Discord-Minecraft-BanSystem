@@ -31,6 +31,11 @@ public class AutoIDCommand extends BSStandAloneCommand {
 
     @Override
     public void perform(SlashCommandInteractionEvent event) {
+        if (!BungeeMain.discordUserHasPermissions(event.getUser(), this.getPermission())) {
+            BungeeMain.sendNoPermissionReply(event);
+            return;
+        }
+
         String type = event.getOption("type").getAsString();
 
         MyEmbedBuilder builder = new MyEmbedBuilder();
@@ -65,7 +70,7 @@ public class AutoIDCommand extends BSStandAloneCommand {
     @Override
     public void execute(CommandSender sender, String[] args) {
         // Check Permission for MC users
-        if (!BungeeMain.minecraftPlayerHasPermissions(sender)) {
+        if (!BungeeMain.minecraftPlayerHasPermissions(sender, this.getPermission())) {
             return;
         }
 

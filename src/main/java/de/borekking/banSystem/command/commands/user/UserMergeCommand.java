@@ -3,8 +3,8 @@ package de.borekking.banSystem.command.commands.user;
 import de.borekking.banSystem.BungeeMain;
 import de.borekking.banSystem.command.BSStandAloneCommand;
 import de.borekking.banSystem.punishment.Platform;
-import de.borekking.banSystem.punishment.user.User;
-import de.borekking.banSystem.punishment.user.UserManager;
+import de.borekking.banSystem.user.User;
+import de.borekking.banSystem.user.UserManager;
 import de.borekking.banSystem.util.discord.MyEmbedBuilder;
 
 import java.awt.Color;
@@ -21,7 +21,7 @@ public class UserMergeCommand extends BSStandAloneCommand {
     // /merge <m/d> <userA> <m/d> <userB>
 
     public UserMergeCommand() {
-        super("merge", "Merge two users",
+        super("merge", "Merge two users", "user.merge",
                 new OptionData(OptionType.STRING, "platform-a", "User A's platform").setRequired(true)
                         .addChoices(new Command.Choice("Discord", Platform.DISCORD.name()), new Command.Choice("Minecraft", Platform.MINECRAFT.name())),
                 new OptionData(OptionType.STRING, "user-a", "User A's Platform ID corresponding to platformA").setRequired(true),
@@ -32,6 +32,11 @@ public class UserMergeCommand extends BSStandAloneCommand {
 
     @Override
     public void perform(SlashCommandInteractionEvent event) {
+        if (!BungeeMain.discordUserHasPermissions(event.getUser(), this.getPermission())) {
+            BungeeMain.sendNoPermissionReply(event);
+            return;
+        }
+
         String platformStrA = event.getOption("platform-a").getAsString();
         String userIDA = event.getOption("user-a").getAsString();
         String platformStrB = event.getOption("platform-b").getAsString();
@@ -72,7 +77,7 @@ public class UserMergeCommand extends BSStandAloneCommand {
     @Override
     public void execute(CommandSender sender, String[] args) {
         // Check Permission for MC users
-        if (!BungeeMain.minecraftPlayerHasPermissions(sender)) {
+        if (!BungeeMain.minecraftPlayerHasPermissions(sender, this.getPermission())) {
             return;
         }
 

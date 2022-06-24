@@ -35,6 +35,11 @@ public class UnpunishCommand extends BSStandAloneCommand {
 
     @Override
     public void perform(SlashCommandInteractionEvent event) {
+        if (!BungeeMain.discordUserHasPermissions(event.getUser(), this.getPermission())) {
+            BungeeMain.sendNoPermissionReply(event);
+            return;
+        }
+
         String user = event.getOption("user").getAsString();
 
         net.dv8tion.jda.api.entities.User operatorDiscordUser = event.getUser();
@@ -53,6 +58,11 @@ public class UnpunishCommand extends BSStandAloneCommand {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
+        // Check Permission for MC users
+        if (!BungeeMain.minecraftPlayerHasPermissions(sender, this.getPermission())) {
+            return;
+        }
+
         if (args.length < 1) {
             BungeeMain.sendMessage(sender, ChatColor.RED + "Too less arguments!", this.getUsage());
             return;

@@ -18,25 +18,27 @@ import de.borekking.banSystem.config.autoReason.AutoReasonHandler;
 import de.borekking.banSystem.discord.DiscordBot;
 import de.borekking.banSystem.minecraft.listener.ChatListener;
 import de.borekking.banSystem.minecraft.listener.PostLoginListener;
+import de.borekking.banSystem.permission.PermissionUtil;
 import de.borekking.banSystem.punishment.GeneralPunishmentHandler;
 import de.borekking.banSystem.punishment.Platform;
 import de.borekking.banSystem.punishment.PunishmentType;
-import de.borekking.banSystem.punishment.user.User;
-import de.borekking.banSystem.punishment.user.UserManager;
+import de.borekking.banSystem.user.User;
+import de.borekking.banSystem.user.UserManager;
 import de.borekking.banSystem.sql.SQLClient;
 import de.borekking.banSystem.util.JarUtils;
 import de.borekking.banSystem.util.JavaUtils;
 import de.borekking.banSystem.util.discord.DiscordUtils;
 
+import de.borekking.banSystem.util.discord.MyEmbedBuilder;
+import java.awt.Color;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.UUID;
 
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -256,31 +258,15 @@ public class BungeeMain extends Plugin {
         instance.getProxy().getPluginManager().registerListener(this, listener);
     }
 
-    public static boolean hasPermission(Platform platform, String platformID) {
+    public static boolean hasPermission(Platform platform, String platformID, String permission) {
         // TODO Permission System
-//        long userID = getUserID(platform, platformID);
-//        if (userID < 0) return false;
-//
-//        User user = getUser(userID);
-//        if (user == null) return false;
-//
-//        return user.hasPermissions(permission);
+        long userID = getUserID(platform, platformID);
+        if (userID < 0) return false;
 
-        // Return true if user is admin
-        switch (platform) {
-            case MINECRAFT: {
-                UUID uuid = Platform.getMinecraftUUID(platformID);
-                ProxiedPlayer player = BungeeMain.getPlayer(uuid);
-                if (player == null) return false;
-                return player.getGroups().contains("admin");
-            }
-            case DISCORD: {
-                long discordID = Platform.getDiscordID(platformID);
-                net.dv8tion.jda.api.entities.User discordUser = DiscordUtils.getUserByID(discordID);
-                if (discordUser == null) return false;
+        User user = getUser(userID);
+        if (user == null) return false;
 
-                Member member = DiscordUtils.getMember(BungeeMain.getInstance().getGuild(), discordUser);
-                if (member == null) return false;
+        return PermissionUtil.userPermissionContainsPermission(user.getPermissions(), permission);
 
                 return member.hasPermission(Permission.ADMINISTRATOR);
             }
@@ -289,9 +275,17 @@ public class BungeeMain extends Plugin {
     }
 
     // Check Permission for MC users
-    public static boolean minecraftPlayerHasPermissions(CommandSender sender) {
+    public static boolean minecraftPlayerHasPermissions(CommandSender sender, String permission) {
         return !(sender instanceof ProxiedPlayer) ||
-                BungeeMain.hasPermission(Platform.MINECRAFT, String.valueOf(((ProxiedPlayer) sender).getUniqueId()));
+                BungeeMain.hasPermission(Platform.MINECRAFT, String.valueOf(((ProxiedPlayer) sender).getUniqueId()), permission);
+    }
+
+    public static boolean discordUserHasPermissions(net.dv8tion.jda.api.entities.User user, String permission) {
+        return user != null && BungeeMain.hasPermission(Platform.DISCORD, user.getId(), permission);
+    }
+
+    public static void sendNoPermissionReply(SlashCommandInteractionEvent event) {
+        event.replyEmbeds(new MyEmbedBuilder().color(Color.RED).title("ERROR").description("You don't have the required permissions to do that!").build()).queue();
     }
 
     private BSCommand[] createCommands() {
