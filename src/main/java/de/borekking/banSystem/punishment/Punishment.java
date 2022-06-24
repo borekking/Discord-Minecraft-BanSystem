@@ -4,7 +4,9 @@ public class Punishment {
 
     // Class holding information about a Punishment (e.g. Ban, Mute)
 
-    private final long userID, operatorID, timestamp, timestampEnd;
+    private final long userID, timestamp, timestampEnd;
+
+    private long operatorID;
 
     private final Platform platform;
 
@@ -45,5 +47,9 @@ public class Punishment {
 
     public String getReason() {
         return reason;
+    }
+
+    public void setOperatorID(long operatorID) {
+        this.operatorID = operatorID;
     }
 }

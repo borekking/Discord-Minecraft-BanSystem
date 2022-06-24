@@ -6,6 +6,7 @@ import de.borekking.banSystem.duration.Duration;
 import de.borekking.banSystem.punishment.GeneralPunishmentHandler;
 import de.borekking.banSystem.punishment.Platform;
 import de.borekking.banSystem.punishment.Punishment;
+import de.borekking.banSystem.util.BSUtils;
 import de.borekking.banSystem.util.discord.MyEmbedBuilder;
 
 import java.awt.Color;
@@ -18,6 +19,7 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class PunishNormalCommand extends BSStandAloneCommand {
 
@@ -57,7 +59,11 @@ public class PunishNormalCommand extends BSStandAloneCommand {
             return;
         }
 
-        List<Punishment> punishments = this.perform(userID, durationLong, reason);
+        net.dv8tion.jda.api.entities.User operatorDiscordUser = event.getUser();
+        String operatorPlatformID = operatorDiscordUser.getId();
+        long operatorID = BSUtils.getUserIDByDiscordIDAndCreateIfAbsent(operatorPlatformID, "");
+
+        List<Punishment> punishments = this.perform(userID, operatorID, durationLong, reason);
         event.replyEmbeds(new MyEmbedBuilder().color(Color.GREEN).description("Created " + punishments.size() + " punishments and eventually deleted old ones.").build()).queue();
     }
 
@@ -87,18 +93,24 @@ public class PunishNormalCommand extends BSStandAloneCommand {
             return;
         }
 
-        List<Punishment> punishments = this.perform(userID, durationLong, reason);
+        long operatorID = -1L;
+        if (sender instanceof ProxiedPlayer) {
+            String operatorPlatformID = ((ProxiedPlayer) sender).getUniqueId().toString();
+            operatorID = BSUtils.getUserIDByMinecraftIDAndCreateIfAbsent(operatorPlatformID, "");
+        }
+
+        List<Punishment> punishments = this.perform(userID, operatorID, durationLong, reason);
         BungeeMain.sendMessage(sender, ChatColor.GREEN + "Created " + punishments.size() + " punishments and eventually deleted old ones.");
     }
 
-    private List<Punishment> perform(long userID, long duration, String reason) {
+    private List<Punishment> perform(long userID, long operatorID, long duration, String reason) {
         long timestampStart = System.currentTimeMillis(), timestampEnd = timestampStart + duration;
         reason = reason == null ? "" : reason;
 
         List<Punishment> punishments = new ArrayList<>();
 
         for (Platform platform : this.platforms) {
-            Punishment punishment = new Punishment(userID, -1L, timestampStart, timestampEnd, platform, reason);
+            Punishment punishment = new Punishment(userID, operatorID, timestampStart, timestampEnd, platform, reason);
 
             this.punishmentHandler.punish(punishment);
             punishments.add(punishment);

@@ -7,8 +7,9 @@ import de.borekking.banSystem.config.autoReason.AutoReasonHandler;
 import de.borekking.banSystem.punishment.GeneralPunishmentHandler;
 import de.borekking.banSystem.punishment.Platform;
 import de.borekking.banSystem.punishment.Punishment;
-
+import de.borekking.banSystem.util.BSUtils;
 import de.borekking.banSystem.util.discord.MyEmbedBuilder;
+
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,7 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class PunishAutoCommand extends BSStandAloneCommand {
 
@@ -50,7 +52,11 @@ public class PunishAutoCommand extends BSStandAloneCommand {
             return;
         }
 
-        List<Punishment> punishments = this.perform(userID, autoID);
+        net.dv8tion.jda.api.entities.User operatorDiscordUser = event.getUser();
+        String operatorPlatformID = operatorDiscordUser.getId();
+        long operatorID = BSUtils.getUserIDByDiscordIDAndCreateIfAbsent(operatorPlatformID, "");
+
+        List<Punishment> punishments = this.perform(userID, operatorID, autoID);
         event.replyEmbeds(new MyEmbedBuilder().color(Color.GREEN).description("Created " + punishments.size() + " punishments and eventually deleted old ones.").build()).queue();
     }
 
@@ -69,18 +75,24 @@ public class PunishAutoCommand extends BSStandAloneCommand {
             return;
         }
 
-        List<Punishment> punishments = this.perform(userID, args[1]);
+        long operatorID = -1L;
+        if (sender instanceof ProxiedPlayer) {
+            String operatorPlatformID = ((ProxiedPlayer) sender).getUniqueId().toString();
+            operatorID = BSUtils.getUserIDByMinecraftIDAndCreateIfAbsent(operatorPlatformID, "");
+        }
+
+        List<Punishment> punishments = this.perform(userID, operatorID, args[1]);
         BungeeMain.sendMessage(sender, ChatColor.GREEN + "Created " + punishments.size() + " punishments and eventually deleted old ones.");
     }
 
-    private List<Punishment> perform(long userID, String autoID) {
+    private List<Punishment> perform(long userID, long operatorID, String autoID) {
         List<Punishment> punishments = new ArrayList<>();
         AutoReason reason = this.getAutoReason(autoID);
 
         if (reason == null) return punishments;
 
         for (Platform platform : this.platforms) {
-            Punishment punishment = reason.createPunishment(userID, -1L, platform);
+            Punishment punishment = reason.createPunishment(userID, operatorID, platform);
 
             this.punishmentHandler.punish(punishment);
             punishments.add(punishment);
