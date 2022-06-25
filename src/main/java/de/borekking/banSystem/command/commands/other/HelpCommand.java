@@ -28,7 +28,7 @@ public class HelpCommand extends BSStandAloneCommand {
 
     @Override
     public void perform(SlashCommandInteractionEvent event) {
-        if (!BungeeMain.discordUserHasPermissions(event.getUser(), this.getPermission())) {
+        if (!BungeeMain.discordUserHasPermissions(event.getMember(), this.getPermission())) {
             BungeeMain.sendNoPermissionReply(event);
             return;
         }

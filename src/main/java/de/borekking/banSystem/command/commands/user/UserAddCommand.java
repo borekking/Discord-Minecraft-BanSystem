@@ -20,7 +20,7 @@ public class UserAddCommand extends BSStandAloneCommand {
     // /user add <platform> <platformID>
 
     public UserAddCommand() {
-        super("add", "Add an user", "user.add",
+        super("add", "Add an user",
                 new OptionData(OptionType.STRING, "platform", "Platform (discord/minecraft)")
                         .setRequired(true)
                         .addChoices(new Command.Choice("Discord", Platform.DISCORD.name()), new Command.Choice("Minecraft", Platform.MINECRAFT.name())),
@@ -30,7 +30,7 @@ public class UserAddCommand extends BSStandAloneCommand {
 
     @Override
     public void perform(SlashCommandInteractionEvent event) {
-        if (!BungeeMain.discordUserHasPermissions(event.getUser(), this.getPermission())) {
+        if (!BungeeMain.discordUserHasPermissions(event.getMember(), this.getPermission())) {
             BungeeMain.sendNoPermissionReply(event);
             return;
         }

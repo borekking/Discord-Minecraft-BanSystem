@@ -35,7 +35,9 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.UUID;
 
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -276,12 +278,18 @@ public class BungeeMain extends Plugin {
 
     // Check Permission for MC users
     public static boolean minecraftPlayerHasPermissions(CommandSender sender, String permission) {
-        return !(sender instanceof ProxiedPlayer) ||
-                BungeeMain.hasPermission(Platform.MINECRAFT, String.valueOf(((ProxiedPlayer) sender).getUniqueId()), permission);
+        if (!(sender instanceof ProxiedPlayer)) return true;
+
+        ProxiedPlayer player = (ProxiedPlayer) sender;
+        if (player.getGroups().contains("admin")) return true;
+
+        return BungeeMain.hasPermission(Platform.MINECRAFT, String.valueOf(player.getUniqueId()), permission);
     }
 
-    public static boolean discordUserHasPermissions(net.dv8tion.jda.api.entities.User user, String permission) {
-        return user != null && BungeeMain.hasPermission(Platform.DISCORD, user.getId(), permission);
+    public static boolean discordUserHasPermissions(Member member, String permission) {
+        if (member == null) return false;
+        if (member.hasPermission(Permission.ADMINISTRATOR)) return true;
+        return BungeeMain.hasPermission(Platform.DISCORD, member.getId(), permission);
     }
 
     public static void sendNoPermissionReply(SlashCommandInteractionEvent event) {

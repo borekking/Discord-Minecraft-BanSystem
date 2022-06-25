@@ -21,7 +21,7 @@ public class UserMergeCommand extends BSStandAloneCommand {
     // /merge <m/d> <userA> <m/d> <userB>
 
     public UserMergeCommand() {
-        super("merge", "Merge two users", "user.merge",
+        super("merge", "Merge two users",
                 new OptionData(OptionType.STRING, "platform-a", "User A's platform").setRequired(true)
                         .addChoices(new Command.Choice("Discord", Platform.DISCORD.name()), new Command.Choice("Minecraft", Platform.MINECRAFT.name())),
                 new OptionData(OptionType.STRING, "user-a", "User A's Platform ID corresponding to platformA").setRequired(true),
@@ -32,7 +32,7 @@ public class UserMergeCommand extends BSStandAloneCommand {
 
     @Override
     public void perform(SlashCommandInteractionEvent event) {
-        if (!BungeeMain.discordUserHasPermissions(event.getUser(), this.getPermission())) {
+        if (!BungeeMain.discordUserHasPermissions(event.getMember(), this.getPermission())) {
             BungeeMain.sendNoPermissionReply(event);
             return;
         }
