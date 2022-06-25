@@ -2,6 +2,7 @@ package de.borekking.banSystem.sql;
 
 import de.borekking.banSystem.BungeeMain;
 
+import de.borekking.banSystem.config.ConfigSetting;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -41,7 +42,11 @@ public class SQLClient {
 
     public void connect() {
         try {
-            String url = "jdbc:mysql://" + this.host + ":3306/" + this.database + "?autoReconnect=true";
+            String port = ConfigSetting.SQL_PORT.getValueAsString(); // e.g. 3306, 5432
+            String type = ConfigSetting.SQL_TYPE.getValueAsString(); // e.g. mysql, postgresql
+
+            String url = "jdbc:" + type + "://" + this.host + ":" + port + "/" + this.database + "?autoReconnect=true";
+
             this.connection = DriverManager.getConnection(url, this.user, this.password);
             this.connected = true;
         } catch (SQLException e) {

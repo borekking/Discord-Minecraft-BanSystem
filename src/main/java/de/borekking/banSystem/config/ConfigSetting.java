@@ -24,6 +24,10 @@ public enum ConfigSetting {
     SQL_USER("sql.user",""),
     SQL_PASSWORD("sql.password",""),
 
+    SQL_PORT("sql.port", ""),
+
+    SQL_TYPE("sql.type", "mysql"),
+
     // Ban (Messages)
     BAN_DISCORD_MESSAGE("ban.discord.message", "Banned for reason: %reason%"),
     BAN_MINECRAFT_MESSAGE("ban.minecraft.message", "You were banned!\n %reason%"),

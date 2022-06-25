@@ -198,6 +198,7 @@ public class BungeeMain extends Plugin {
         instance = this;
         JarUtils.importJars(this, "JDA-5.0.0-alpha.11_1e25ede-withDependencies-min.jar");
         JarUtils.importJars(this, "postgresql-42.3.5.jar");
+        JarUtils.importJars(this, "mysql-connector-java-8.0.11.jar");
     }
 
     @Override
