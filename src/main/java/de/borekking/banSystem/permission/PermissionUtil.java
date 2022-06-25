@@ -2,7 +2,6 @@ package de.borekking.banSystem.permission;
 
 import de.borekking.banSystem.util.JavaUtils;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,8 +52,14 @@ public final class PermissionUtil {
         return permissions.stream().collect(Collectors.joining(PERMISSION_SEPARATOR));
     }
 
-    public static String mergePermissions(String... permissions) {
+    public static String mergeCommandPermissions(String... permissions) {
         return JavaUtils.getAsList(permissions).stream().collect(Collectors.joining(GROUP_SEPARATOR));
+    }
+
+    public static String mergeUserPermissions(String... permissions) {
+        List<String> list = JavaUtils.getAsList(permissions).stream().filter(str -> !str.isEmpty()).collect(Collectors.toList());
+        JavaUtils.removeDuplicates(list);
+        return list.stream().collect(Collectors.joining(PERMISSION_SEPARATOR));
     }
 
     public static String removePermissions(String permissions, String permissionsRemoved) {

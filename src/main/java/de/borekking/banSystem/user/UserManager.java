@@ -81,7 +81,7 @@ public class UserManager {
         if (user == null) return null;
 
         String oldPermissions = user.getPermissions();
-        String permissions = PermissionUtil.mergePermissions(oldPermissions, newPermissions);
+        String permissions = PermissionUtil.mergeUserPermissions(oldPermissions, newPermissions);
 
         this.setUserPermissions(userID, permissions);
 
@@ -192,7 +192,7 @@ public class UserManager {
         User userB = this.getUser(userIDB);
 
         // Merge permissions
-        String newPermissions = PermissionUtil.mergePermissions(userA.getPermissions(), userB.getPermissions());
+        String newPermissions = PermissionUtil.mergeUserPermissions(userA.getPermissions(), userB.getPermissions());
 
         // Set new permissions for userA
         this.setUserPermissions(userIDA, newPermissions);

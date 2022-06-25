@@ -24,6 +24,24 @@ public class JavaUtils {
         return String.join(delimiter, list);
     }
 
+    public static <T> void removeDuplicates(List<T> list) {
+        // 1. Count elements
+        Map<T, Integer> counter = new HashMap<>();
+        for (T t : list) {
+            int amount = counter.getOrDefault(t, 0);
+            counter.put(t, amount + 1);
+        }
+
+        // 2. Remove duplicated elements
+        for (T t : counter.keySet()) {
+            int amount = counter.get(t);
+
+            for (int i = 1; i < amount; i++) {
+                list.remove(t);
+            }
+        }
+    }
+
     @SafeVarargs
     public static <T> T[] mergeArrays(Function<Integer, T[]> arrayCreator, T[]... arrays) {
         int length = 0;

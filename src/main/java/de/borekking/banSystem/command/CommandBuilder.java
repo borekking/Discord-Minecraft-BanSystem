@@ -21,7 +21,7 @@ public class CommandBuilder {
 
     // Add a single SubCommand
     public CommandBuilder addSubCommand(BSStandAloneCommand subCommand) {
-        subCommand.setPermission(PermissionUtil.mergePermissions(this.command.getName(), subCommand.getPermission()));
+        subCommand.setPermission(PermissionUtil.mergeCommandPermissions(this.command.getName(), subCommand.getPermission()));
         this.command.addSubCommands(subCommand);
         return this;
     }
@@ -37,7 +37,7 @@ public class CommandBuilder {
         BSSubCommandGroup group = this.subCommandGroups.get(subCommandGroup);
         if (group == null) return this; // Group does not exist!
 
-        subCommand.setPermission(PermissionUtil.mergePermissions(this.command.getName(), subCommandGroup, subCommand.getPermission()));
+        subCommand.setPermission(PermissionUtil.mergeCommandPermissions(this.command.getName(), subCommandGroup, subCommand.getPermission()));
         group.addSubCommands(subCommand);
         return this;
     }
