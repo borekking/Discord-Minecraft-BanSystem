@@ -269,11 +269,6 @@ public class BungeeMain extends Plugin {
         if (user == null) return false;
 
         return PermissionUtil.userPermissionContainsPermission(user.getPermissions(), permission);
-
-                return member.hasPermission(Permission.ADMINISTRATOR);
-            }
-        }
-        return false;
     }
 
     // Check Permission for MC users
