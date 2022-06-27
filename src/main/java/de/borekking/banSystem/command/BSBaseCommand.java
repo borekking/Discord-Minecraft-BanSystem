@@ -14,7 +14,6 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 
 import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class BSBaseCommand extends BSCommand {
 
@@ -132,16 +131,12 @@ public class BSBaseCommand extends BSCommand {
         String group = event.getSubcommandGroup();
         String subCommand = event.getSubcommandName();
 
-        BSStandAloneCommand command = this.getSubCommand(subCommand);
+        BSStandAloneCommand command = this.getSubCommandFromGroup(group, subCommand);
         if (command == null) {
-            command = this.getSubCommandFromGroup(group, subCommand);
+            command = this.getSubCommand(subCommand);
         }
 
-        if (command == null) {
-            // Send help message, with commands that can be used
-            // TODO s.o.
-            return;
-        }
+        if (command == null) return;
 
         command.perform(event);
     }
