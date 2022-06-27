@@ -68,7 +68,7 @@ public class UserPermissionRemoveCommand extends BSStandAloneCommand {
                 .color(Color.GREEN)
                 .title("Success")
                 .description("Removed permissions!")
-                .field("New Permissions", "\"" + newPermissions + "\"", false)
+                .field("New Permissions", "`" + newPermissions + "`", false)
                 .build()).queue();
     }
 
