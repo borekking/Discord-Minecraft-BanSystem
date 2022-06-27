@@ -1,9 +1,8 @@
 package de.borekking.banSystem.util.discord;
 
 import de.borekking.banSystem.BungeeMain;
-
+import java.util.List;
 import java.util.stream.Collectors;
-
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
@@ -12,25 +11,50 @@ import net.dv8tion.jda.api.entities.User;
 
 public class DiscordUtils {
 
-    public static User getUserByID(Long id) {
-        return BungeeMain.getInstance().getDiscordBot().getJda().getUserById(id);
+    public static User getUserByID(String id) {
+        if (id == null) return null;
+
+        User user = null;
+        try {
+            user = BungeeMain.getInstance().getDiscordBot().getJda().getUserById(id);
+        } catch (NumberFormatException ignored) {
+        }
+
+        if (user != null) return user;
+
+        return getUserFromBanListByID(id);
     }
 
-    public static User getUserByID(String id) {
-        try {
-            return getUserByID(Long.parseLong(id));
-        } catch (NumberFormatException e) {
-            return null;
-        }
+    public static User getUserByID(Long id) {
+        return getUserByID(String.valueOf(id));
     }
 
     // E.g. "borekking#0187"
     public static User getUserByTag(String tag) {
+        User user = null;
+
         try {
-            return BungeeMain.getInstance().getDiscordBot().getJda().getUserByTag(tag);
-        } catch (IllegalArgumentException e) {
-            return null;
+            user = BungeeMain.getInstance().getDiscordBot().getJda().getUserByTag(tag);
+        } catch (IllegalArgumentException ignored) {
         }
+
+        if (user != null) return user;
+
+        return getUserFromBanListByTag(tag);
+    }
+
+    private static User getUserFromBanListByID(String id) {
+        Guild.Ban matchingBan = getBanList().stream()
+                .filter(ban -> ban.getUser().getId().equals(id)).findFirst().orElse(null);
+
+        return matchingBan == null ? null : matchingBan.getUser();
+    }
+
+    private static User getUserFromBanListByTag(String tag) {
+        Guild.Ban matchingBan = getBanList().stream()
+                .filter(ban -> ban.getUser().getAsTag().equals(tag)).findFirst().orElse(null);
+
+        return matchingBan == null ? null : matchingBan.getUser();
     }
 
     public static Member getMember(Guild guild, User user) {
@@ -75,14 +99,12 @@ public class DiscordUtils {
     }
 
     public static boolean userIsBanned(final User user) {
-        final Guild guild = BungeeMain.getInstance().getDiscordBot().getGuild();
+        return getBanList().stream().map(Guild.Ban::getUser).collect(Collectors.toList()).contains(user);
+    }
 
-        boolean[] b = new boolean[1];
-
-        guild.retrieveBanList().queue(list -> b[0] = list.stream()
-                .map(Guild.Ban::getUser).collect(Collectors.toList()).contains(user));
-
-        return b[0];
+    public static List<Guild.Ban> getBanList() {
+        Guild guild = BungeeMain.getInstance().getDiscordBot().getGuild();
+        return guild.retrieveBanList().complete();
     }
 
     public static void addRole(User user, Role role) {
