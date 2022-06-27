@@ -11,7 +11,10 @@ import de.borekking.banSystem.command.commands.punish.punish.PunishNormalCommand
 import de.borekking.banSystem.command.commands.punish.unpunish.UnpunishCommand;
 import de.borekking.banSystem.command.commands.other.HelpCommand;
 import de.borekking.banSystem.command.commands.user.UserAddCommand;
+import de.borekking.banSystem.command.commands.user.UserGetCommand;
 import de.borekking.banSystem.command.commands.user.UserMergeCommand;
+import de.borekking.banSystem.command.commands.user.permissions.UserPermissionAddCommand;
+import de.borekking.banSystem.command.commands.user.permissions.UserPermissionRemoveCommand;
 import de.borekking.banSystem.config.ConfigHandler;
 import de.borekking.banSystem.config.ConfigSetting;
 import de.borekking.banSystem.config.autoReason.AutoReasonHandler;
@@ -28,8 +31,8 @@ import de.borekking.banSystem.sql.SQLClient;
 import de.borekking.banSystem.util.JarUtils;
 import de.borekking.banSystem.util.JavaUtils;
 import de.borekking.banSystem.util.discord.DiscordUtils;
-
 import de.borekking.banSystem.util.discord.MyEmbedBuilder;
+
 import java.awt.Color;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -39,8 +42,8 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
-
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
