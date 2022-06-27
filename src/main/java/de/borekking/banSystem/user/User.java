@@ -29,11 +29,14 @@ public class User {
 
     public String getName() {
         if (this.uuids.size() > 0) {
-            return MinecraftUUIDUtils.getNameFromUUID(uuids.get(0));
+            return MinecraftUUIDUtils.getNameFromUUID(this.uuids.get(0));
         }
 
         if (this.discordIDs.size() > 0) {
-            return DiscordUtils.getUserByID(this.discordIDs.get(0)).getName();
+            net.dv8tion.jda.api.entities.User user = DiscordUtils.getUserByID(this.discordIDs.get(0));
+            if (user != null) {
+                return user.getName();
+            }
         }
 
         return "";
