@@ -38,7 +38,7 @@ public final class JarUtils {
         try {
             List<File> libs = new ArrayList<>();
             for (String name : plugins)
-                libs.add(new File(pl.getDataFolder().getPath() + "\\libs", name));
+                libs.add(new File(pl.getDataFolder().getPath() + File.separator + "libs", name));
 
             for (final File lib : libs) {
                 if (!lib.exists()) {
