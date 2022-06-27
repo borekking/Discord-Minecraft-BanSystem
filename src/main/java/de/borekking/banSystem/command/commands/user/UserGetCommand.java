@@ -4,7 +4,6 @@ import de.borekking.banSystem.BungeeMain;
 import de.borekking.banSystem.command.BSStandAloneCommand;
 import de.borekking.banSystem.punishment.Platform;
 import de.borekking.banSystem.user.User;
-import de.borekking.banSystem.user.UserManager;
 import de.borekking.banSystem.util.discord.MyEmbedBuilder;
 
 import java.awt.Color;
@@ -100,8 +99,6 @@ public class UserGetCommand extends BSStandAloneCommand {
             BungeeMain.sendMessage(sender, "Error", "Could not find user!");
             return;
         }
-
-        UserManager userManager = BungeeMain.getInstance().getUserManager();
 
         BungeeMain.sendMessage(sender,
                 "Name:", "   " + user.getName(),

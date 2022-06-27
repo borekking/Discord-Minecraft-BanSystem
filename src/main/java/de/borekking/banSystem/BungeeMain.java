@@ -15,6 +15,7 @@ import de.borekking.banSystem.command.commands.user.UserGetCommand;
 import de.borekking.banSystem.command.commands.user.UserMergeCommand;
 import de.borekking.banSystem.command.commands.user.permissions.UserPermissionAddCommand;
 import de.borekking.banSystem.command.commands.user.permissions.UserPermissionRemoveCommand;
+import de.borekking.banSystem.command.commands.user.punishments.UserGetPunishmentsCommand;
 import de.borekking.banSystem.config.ConfigHandler;
 import de.borekking.banSystem.config.ConfigSetting;
 import de.borekking.banSystem.config.autoReason.AutoReasonHandler;
@@ -313,6 +314,8 @@ public class BungeeMain extends Plugin {
                         .addSubCommandGroup("permissions", "Edit a user's permissions")
                         .addSubCommand("permissions", new UserPermissionRemoveCommand())
                         .addSubCommand("permissions", new UserPermissionAddCommand())
+                        // old punishments
+                        .addSubCommand(new UserGetPunishmentsCommand(new GeneralPunishmentHandler[] {this.banHandler, this.muteHandler}))
                         .create(),
 
 

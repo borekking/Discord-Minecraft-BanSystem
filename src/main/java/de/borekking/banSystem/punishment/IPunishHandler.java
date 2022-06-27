@@ -17,4 +17,6 @@ public interface IPunishHandler {
     void unPunish(Punishment punishment);
 
     List<Punishment> getAllPunishments();
+
+    List<Punishment> getOldPunishments(long userID);
 }
