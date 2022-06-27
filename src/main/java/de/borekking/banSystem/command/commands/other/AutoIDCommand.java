@@ -9,6 +9,7 @@ import de.borekking.banSystem.punishment.PunishmentType;
 import de.borekking.banSystem.util.discord.MyEmbedBuilder;
 
 import java.awt.Color;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -88,7 +89,8 @@ public class AutoIDCommand extends BSStandAloneCommand {
         } else if (PunishmentType.BAN.name().equalsIgnoreCase(type)) {
             autoReasonHandler = BungeeMain.getInstance().getAutoBans();
         } else {
-            BungeeMain.sendMessage(sender, "Could not find type \"" + type + "\"!");
+            String[] availableTypes = Arrays.stream(PunishmentType.values()).map(punishment -> "   - " + punishment.name()).toArray(String[]::new);
+            BungeeMain.sendMessage(sender, new String[] {"Could not find type \"" + type + "\"!", "Available Types: "}, availableTypes);
             return;
         }
 

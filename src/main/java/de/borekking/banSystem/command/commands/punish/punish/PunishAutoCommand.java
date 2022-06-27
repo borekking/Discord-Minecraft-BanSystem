@@ -70,6 +70,16 @@ public class PunishAutoCommand extends BSStandAloneCommand {
         long operatorID = BSUtils.getUserIDByDiscordIDAndCreateIfAbsent(operatorPlatformID, "");
 
         List<Punishment> punishments = this.perform(userID, operatorID, autoID);
+
+        if (punishments.isEmpty()) {
+            event.replyEmbeds(new MyEmbedBuilder()
+                    .color(Color.RED)
+                            .title("Error")
+                            .description("Error occurred! Auto-ID is probably wrong. Check out /auto-ids!")
+                    .build()).queue();
+            return;
+        }
+
         event.replyEmbeds(new MyEmbedBuilder().color(Color.GREEN).description("Created " + punishments.size() + " punishments and eventually deleted old ones.").build()).queue();
     }
 
@@ -100,6 +110,12 @@ public class PunishAutoCommand extends BSStandAloneCommand {
         }
 
         List<Punishment> punishments = this.perform(userID, operatorID, args[1]);
+
+        if (punishments.isEmpty()) {
+            BungeeMain.sendMessage(sender, "Error occurred! Auto-ID is probably wrong. Check out /auto-ids!");
+            return;
+        }
+
         BungeeMain.sendMessage(sender, ChatColor.GREEN + "Created " + punishments.size() + " punishments and eventually deleted old ones.");
     }
 

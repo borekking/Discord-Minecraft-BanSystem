@@ -55,6 +55,15 @@ public class UserPermissionRemoveCommand extends BSStandAloneCommand {
         UserManager userManager = BungeeMain.getInstance().getUserManager();
         String newPermissions = userManager.removePermissions(userID, permissions);
 
+        if (newPermissions == null) {
+            event.replyEmbeds(new MyEmbedBuilder()
+                    .color(Color.RED)
+                    .title("Error")
+                    .description("Error occurred! Permissions Could not be added! Probably the user does not exist. Please add the user using /user add.")
+                    .build()).queue();
+            return;
+        }
+
         event.replyEmbeds(new MyEmbedBuilder()
                 .color(Color.GREEN)
                 .title("Success")
@@ -90,6 +99,13 @@ public class UserPermissionRemoveCommand extends BSStandAloneCommand {
 
         UserManager userManager = BungeeMain.getInstance().getUserManager();
         String newPermissions = userManager.removePermissions(userID, permissions);
+
+        if (newPermissions == null) {
+            BungeeMain.sendMessage(sender, "Error occurred!",
+                    "Permissions Could not be added! Probably the user does not exist.",
+                    "Please add the user using /user add.");
+            return;
+        }
 
         BungeeMain.sendMessage(sender, "Success!", "Removed permissions!", "New Permissions:", newPermissions);
     }
