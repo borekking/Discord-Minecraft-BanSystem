@@ -169,7 +169,7 @@ public enum PunishmentType {
                     net.dv8tion.jda.api.entities.User discordUser = DiscordUtils.getUserByID(id);
                     if (discordUser == null) continue; // NPE!
 
-                    DiscordUtils.addRole(discordUser, muteRole);
+                    DiscordUtils.removeRole(discordUser, muteRole);
 
                     if (!message.isEmpty()) {
                         discordUser.openPrivateChannel().queue(channel -> channel
