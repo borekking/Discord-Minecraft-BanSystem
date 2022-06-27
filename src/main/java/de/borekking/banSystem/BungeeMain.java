@@ -304,6 +304,12 @@ public class BungeeMain extends Plugin {
                         .addSubCommand(new UserAddCommand())
                         // user merge
                         .addSubCommand(new UserMergeCommand())
+                        // user get
+                        .addSubCommand(new UserGetCommand())
+                        // permissions (.add, .remove)
+                        .addSubCommandGroup("permissions", "Edit a user's permissions")
+                        .addSubCommand("permissions", new UserPermissionRemoveCommand())
+                        .addSubCommand("permissions", new UserPermissionAddCommand())
                         .create(),
 
 
