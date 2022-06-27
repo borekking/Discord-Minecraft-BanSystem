@@ -4,6 +4,7 @@ import de.borekking.banSystem.BungeeMain;
 import de.borekking.banSystem.command.BSStandAloneCommand;
 import de.borekking.banSystem.config.autoReason.AutoReason;
 import de.borekking.banSystem.config.autoReason.AutoReasonHandler;
+import de.borekking.banSystem.duration.Duration;
 import de.borekking.banSystem.punishment.GeneralPunishmentHandler;
 import de.borekking.banSystem.punishment.Platform;
 import de.borekking.banSystem.punishment.Punishment;
@@ -14,7 +15,9 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.stream.Collectors;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
@@ -33,7 +36,12 @@ public class PunishAutoCommand extends BSStandAloneCommand {
     public PunishAutoCommand(String commandName, String commandDescription, String userOptionDescription, GeneralPunishmentHandler punishmentHandler, AutoReasonHandler autoReasonHandler, Platform... platforms) {
         super(commandName, commandDescription,
                 new OptionData(OptionType.STRING, "user", userOptionDescription).setRequired(true),
-                new OptionData(OptionType.STRING, "auto-id", "Auto id").setRequired(true));
+                new OptionData(OptionType.STRING, "auto-id", "Auto id")
+                        .addChoices(autoReasonHandler.getIds().stream().map(id -> {
+                            AutoReason reason = autoReasonHandler.getReasonByID(id);
+                            return new Command.Choice(reason.getName() + " (" + Duration.getMessage(reason.getDuration()) + ")", reason.getId());
+                        }).collect(Collectors.toList())).setRequired(true)
+        );
 
         this.punishmentHandler = punishmentHandler;
         this.autoReasonHandler = autoReasonHandler;
@@ -116,7 +124,7 @@ public class PunishAutoCommand extends BSStandAloneCommand {
 
         try {
             idInt = Integer.parseInt(idStr);
-        } catch(NumberFormatException exception) {
+        } catch (NumberFormatException exception) {
             return null;
         }
 
