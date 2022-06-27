@@ -1,6 +1,7 @@
 package de.borekking.banSystem.minecraft.listener;
 
 import de.borekking.banSystem.BungeeMain;
+import de.borekking.banSystem.config.ConfigSetting;
 import de.borekking.banSystem.punishment.Platform;
 import de.borekking.banSystem.punishment.Punishment;
 
@@ -24,8 +25,7 @@ public class PostLoginListener implements Listener {
         if (ban == null) return;
 
         if (this.isBanned(ban)) {
-            // TODO Custom message
-            player.disconnect(new TextComponent("You are banned!\n"), new TextComponent(ban.getReason()));
+            player.disconnect(new TextComponent(ConfigSetting.BAN_MINECRAFT_MESSAGE.getValueAsString().replace("%reason%", ban.getReason())));
         }
     }
 

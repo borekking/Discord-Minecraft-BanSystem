@@ -35,7 +35,7 @@ public enum PunishmentType {
                     net.dv8tion.jda.api.entities.User discordUser = DiscordUtils.getUserByID(id);
                     if (discordUser == null) continue; // NPE!
 
-                    DiscordUtils.ban(discordUser, 2, reason); // TODO delDays
+                    DiscordUtils.ban(discordUser, 2, reason);
                 }
                 break;
             } case MINECRAFT: {
@@ -82,12 +82,11 @@ public enum PunishmentType {
                         .color(Color.RED)
                         .title("Ban")
                         .description("Banned user " + user.getName())
-                        .field(JavaUtils.createMap(
-                                "Name", user.getName(),
-                                "Platform", punishment.getPlatform().name(),
-                                "Duration", Duration.getMessage(punishment.getDuration()),
-                                "Reason", punishment.getReason(),
-                                "Operator", getOperatorName(punishment.getOperatorID())), false)
+                        .field("Name", user.getName(), false)
+                        .field("Platform", punishment.getPlatform().name(), false)
+                        .field("Duration", Duration.getMessage(punishment.getDuration()), false)
+                        .field("Reason", punishment.getReason(), false)
+                        .field("Operator", getOperatorName(punishment.getOperatorID()), false)
                         .build());
     }, punishment -> {
         // BR Unban
@@ -112,7 +111,10 @@ public enum PunishmentType {
         switch (platform) {
             case DISCORD: {
                 Role muteRole = BungeeMain.getMuteRole();
-                if (muteRole == null) break; // TODO - MSG?
+                if (muteRole == null) {
+                    System.out.println("Mute Role does not exist!");
+                    break;
+                }
 
                 String message = ConfigSetting.MUTE_DISCORD_MUTE.getValueAsString().replace("%reason%", punishment.getReason());
 
@@ -125,7 +127,8 @@ public enum PunishmentType {
                     DiscordUtils.addRole(discordUser, muteRole);
 
                     if (!message.isEmpty()) {
-                        discordUser.openPrivateChannel().queue(channel -> channel.sendMessage(message).queue());
+                        discordUser.openPrivateChannel().queue(channel -> channel
+                                .sendMessageEmbeds(new MyEmbedBuilder().color(Color.RED).title("Mute").description(message).build()).queue());
                     }
                 }
                 break;
@@ -153,7 +156,10 @@ public enum PunishmentType {
             case DISCORD: {
                 // Remove mute role
                 Role muteRole = BungeeMain.getMuteRole();
-                if (muteRole == null) break; // TODO - MSG?
+                if (muteRole == null) {
+                    System.out.println("Mute Role does not exist!");
+                    break;
+                }
 
                 String message = ConfigSetting.MUTE_DISCORD_UNMUTE.getValueAsString().replace("%reason%", punishment.getReason());
 
@@ -166,7 +172,8 @@ public enum PunishmentType {
                     DiscordUtils.addRole(discordUser, muteRole);
 
                     if (!message.isEmpty()) {
-                        discordUser.openPrivateChannel().queue(channel -> channel.sendMessage(message).queue());
+                        discordUser.openPrivateChannel().queue(channel -> channel
+                                .sendMessageEmbeds(new MyEmbedBuilder().color(Color.RED).title("Unmute").description(message).build()).queue());
                     }
                 }
                 break;
@@ -195,12 +202,11 @@ public enum PunishmentType {
                         .color(Color.RED)
                         .title("Mute")
                         .description("Muted user " + user.getName())
-                        .field(JavaUtils.createMap(
-                                "Name", user.getName(),
-                                "Platform", punishment.getPlatform().name(),
-                                "Duration", Duration.getMessage(punishment.getDuration()),
-                                "Reason", punishment.getReason(),
-                                "Operator", getOperatorName(punishment.getOperatorID())), false)
+                        .field("Name", user.getName(), false)
+                        .field("Platform", punishment.getPlatform().name(), false)
+                        .field("Duration", Duration.getMessage(punishment.getDuration()),false)
+                        .field("Reason", punishment.getReason(), false)
+                        .field("Operator", getOperatorName(punishment.getOperatorID()), false)
                         .build());
     }, punishment -> {
         // BR Unmute

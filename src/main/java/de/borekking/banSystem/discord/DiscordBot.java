@@ -2,6 +2,7 @@ package de.borekking.banSystem.discord;
 
 import de.borekking.banSystem.BungeeMain;
 import de.borekking.banSystem.command.BSCommand;
+import de.borekking.banSystem.config.ConfigSetting;
 import de.borekking.banSystem.discord.listener.SlashCommandListener;
 
 import javax.security.auth.login.LoginException;
@@ -25,7 +26,7 @@ public class DiscordBot {
         JDABuilder builder = JDABuilder.createLight(token);
 
         builder.setStatus(OnlineStatus.ONLINE);
-        builder.setActivity(Activity.playing("187")); // TODO MSG - Config/Command
+        builder.setActivity(Activity.playing(ConfigSetting.DISCORD_PLAYING_ACTIVITY.getValueAsString()));
 
         builder.enableIntents(GatewayIntent.GUILD_MEMBERS);
         builder.setChunkingFilter(ChunkingFilter.ALL);
