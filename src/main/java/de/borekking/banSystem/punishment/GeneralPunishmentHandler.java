@@ -121,8 +121,8 @@ public class GeneralPunishmentHandler implements IPunishHandler {
         }
 
         if (broadcast) {
-            this.punishmentType.unPunish(punishment);
             this.punishmentType.broadcastUnPunishment(punishment);
+            this.punishmentType.unPunish(punishment);
         }
 
         this.database.update(this.deletePunishmentStatement);
