@@ -67,7 +67,7 @@ public class ConfigFile {
         // Get parent from plugin folder and given path (if not null)
         String parent = dataFolder.getPath();
         if (path != null) {
-            parent = parent + "\\" + path;
+            parent = parent + File.separator + path;
         }
 
         this.file = new File(parent, fileName);
