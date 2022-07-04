@@ -16,9 +16,18 @@ public class ChatListener implements Listener {
         Connection sender = event.getSender();
 
         // Check for mute
-        if (this.isMuted(sender)) {
-            event.setCancelled(true);
+        if (!this.isMuted(sender)) {
+            return;
         }
+
+        // Check for Command
+        if (event.isCommand()) {
+            return;
+        }
+
+        // Don't send message since it's not
+        // a command and the user is muted
+        event.setCancelled(true);
     }
 
     private boolean isMuted(Connection connection) {
