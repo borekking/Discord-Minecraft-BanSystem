@@ -55,24 +55,46 @@ import net.md_5.bungee.api.plugin.Plugin;
 public class BungeeMain extends Plugin {
 
     /*
-     * TODO
-     *  0. Commands:
-     *        - Durations Command +
-     *        - Auto-ID Command +
-     *        - Help Command +
-     *        - Reload -> implement reload shit
-     *  1. Broadcaster: On Mute, un-mute, ... -> PunishmentType
-     *  2. Merge Command: UserManager::merge: long : userIDA, long : userIDB ->
-     *     -> /merge <m/d> <userA> <m/d> <userB>
-     *  3. Unmerge Command: <- Doen't make sense -> Do /remove link <platform> <user> <platformID to remove>
-     *  4. OperatorID: While doing punishments, un-punishments: Get/Create User (BSUtils:getAndCreateOnAbsent) -> add to Punishment
-     *  5. Permissions:
+     * Features:
+     *   - Ban/Mute/Unban/Unmute auf discord und minecraft (bungee)
+     *   - auto und normal bans und mutes
+     *
+     *   - User in Database; User können gemerged werden
+     *        -> user add <platform> <platformID>
+     *        -> user merge <platformA> <userA> <platformB> <userB>
+     *
+     *   - Broadcasts, channel (mute und ban) einstellbar
+     *   - Anzeige, wer gebannt, mutet, etc hat (OperatorID)
+     *
+     *   - Alle Commands auf DC und MC
+     *        -> DC -> SlashCommands
+     *   - Extra Commands: Durations, Auto-ID, Help
+     *
+     *   - Permissions:
+     *        - Für Commands
      *        - add permissions: <user> <platform> <permissions>
      *        - remove permissions: <user> <platform> <permissions>
-     *        - Add Permissions to Commands as attribute -> check permissions (UserManager:getUser)
      *        - e.g. "ban.*", "ban.minecraft.auto"
+     *
+     *   - Prefix sowie mute und ban messages einstellbar
+     *
+     *  Not done:
+     *   - User unmergen
+     *   - ein paar bugfixes bezg. nicht mögliche bans/mutes auf dc.
+     *
+     */
+
+    /*
+     * TODO
+     *  0. Commands:
+     *        (- Reload -> implement reload shit)
+     *  2. Merge Command:
+     *      - Commands:
+     *                  /user unmerge <platform> <platformID> -> Create new user for given platform with same permissions
+     *                  Unmerge Command: <- Don't make sense -> Do /remove link <platform> <user> <platformID to remove>
      *  6. Other:
      *        - Message if user to ban has too high permission (-> permissions with rank?, -> dc: higher than the bot)
+     *        - Add some messages/BRs to config -> make more customizable
      *
      */
 
@@ -181,6 +203,8 @@ public class BungeeMain extends Plugin {
 
     // BungeeCord Main class (also overall main class)
 
+    public static final String VERSION = "1.0.1";
+
     // Plugin instance
     private static BungeeMain instance;
 
@@ -239,7 +263,7 @@ public class BungeeMain extends Plugin {
         this.discordBot = new DiscordBot(token, guildId, commands);
         // ------ </Discord Bot> ------
 
-        System.out.println("Loaded Discord-Minecraft-BanSystem Plugin by borekking [v. 1.0.0 - Private Beta]");
+        System.out.println("Loaded Discord-Minecraft-BanSystem Plugin by borekking [v. " + VERSION + "]");
     }
 
     @Override
